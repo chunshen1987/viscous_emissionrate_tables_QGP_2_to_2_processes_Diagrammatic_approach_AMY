@@ -43,8 +43,10 @@ class QGP_2to2_Scattering
       // Gaussian quadrature points for phase space integrations 
       int n_qtilde_I1;
       double *qtilde_I1_pt, *qtilde_I1_weight, *qtilde_I1_pt_standard, *qtilde_I1_weight_standard;
-      int n_qtilde_I2;
-      double *qtilde_I2_pt, *qtilde_I2_weight, *qtilde_I2_pt_standard, *qtilde_I2_weight_standard;
+      int n_qtilde_I2_1;
+      double *qtilde_I2_1_pt, *qtilde_I2_1_weight, *qtilde_I2_1_pt_standard, *qtilde_I2_1_weight_standard;
+      int n_qtilde_I2_2;
+      double *qtilde_I2_2_pt, *qtilde_I2_2_weight, *qtilde_I2_2_pt_standard, *qtilde_I2_2_weight_standard;
 
       int n_omega_I1;
       double *omega_I1_pt, *omega_I1_weight, *omega_I1_pt_standard, *omega_I1_weight_standard;

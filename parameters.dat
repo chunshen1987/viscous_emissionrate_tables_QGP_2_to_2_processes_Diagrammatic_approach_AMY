@@ -4,12 +4,12 @@ n_p = 100
 n_theta = 100
 
 n_ktilde = 1
-ktilde_i = 10
+ktilde_i = 10.
 ktilde_max = 50
 
 n_qtilde_I1 = 50
-n_qtilde_I2 = 200
-qtilde_max = 20
+n_qtilde_I2_1 = 100
+n_qtilde_I2_2 = 20
 n_omega_I1 = 20
 n_omega_I2 = 80
 n_pprime_I1 = 100
