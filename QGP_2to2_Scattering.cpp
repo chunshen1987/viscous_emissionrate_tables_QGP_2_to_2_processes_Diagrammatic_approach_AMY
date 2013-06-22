@@ -52,24 +52,41 @@ QGP_2to2_Scattering::QGP_2to2_Scattering(ParameterReader* paraRdr_in)
    viscousTilde_results = new double [n_ktilde];
    
    //initialize the Gaussian quadrature lattices
-   n_qtilde = paraRdr->getVal("n_qtilde");
-   qtilde_pt = new double [n_qtilde];
-   qtilde_weight = new double [n_qtilde];
-   qtilde_pt_standard = new double [n_qtilde];
-   qtilde_weight_standard = new double [n_qtilde];
+   n_qtilde_I1 = paraRdr->getVal("n_qtilde_I1");
+   qtilde_I1_pt = new double [n_qtilde_I1];
+   qtilde_I1_weight = new double [n_qtilde_I1];
+   qtilde_I1_pt_standard = new double [n_qtilde_I1];
+   qtilde_I1_weight_standard = new double [n_qtilde_I1];
+   
+   n_qtilde_I2 = paraRdr->getVal("n_qtilde_I2");
+   qtilde_I2_pt = new double [n_qtilde_I2];
+   qtilde_I2_weight = new double [n_qtilde_I2];
+   qtilde_I2_pt_standard = new double [n_qtilde_I2];
+   qtilde_I2_weight_standard = new double [n_qtilde_I2];
 
-   n_omega = paraRdr->getVal("n_omega");
-   omega_pt = new double [n_omega];
-   omega_weight = new double [n_omega];
-   omega_pt_standard = new double [n_omega];
-   omega_weight_standard = new double [n_omega];
+   n_omega_I1 = paraRdr->getVal("n_omega_I1");
+   omega_I1_pt = new double [n_omega_I1];
+   omega_I1_weight = new double [n_omega_I1];
+   omega_I1_pt_standard = new double [n_omega_I1];
+   omega_I1_weight_standard = new double [n_omega_I1];
 
-   n_pprime = paraRdr->getVal("n_pprime");
-   pprime_max = paraRdr->getVal("pprime_max");
-   pprime_pt = new double [n_pprime];
-   pprime_weight = new double [n_pprime];
-   pprime_pt_standard = new double [n_pprime];
-   pprime_weight_standard = new double [n_pprime];
+   n_omega_I2 = paraRdr->getVal("n_omega_I2");
+   omega_I2_pt = new double [n_omega_I2];
+   omega_I2_weight = new double [n_omega_I2];
+   omega_I2_pt_standard = new double [n_omega_I2];
+   omega_I2_weight_standard = new double [n_omega_I2];
+
+   n_pprime_I1 = paraRdr->getVal("n_pprime_I1");
+   pprime_I1_pt = new double [n_pprime_I1];
+   pprime_I1_weight = new double [n_pprime_I1];
+   pprime_I1_pt_standard = new double [n_pprime_I1];
+   pprime_I1_weight_standard = new double [n_pprime_I1];
+   
+   n_pprime_I2 = paraRdr->getVal("n_pprime_I2");
+   pprime_I2_pt = new double [n_pprime_I2];
+   pprime_I2_weight = new double [n_pprime_I2];
+   pprime_I2_pt_standard = new double [n_pprime_I2];
+   pprime_I2_weight_standard = new double [n_pprime_I2];
 
    n_pSoft = paraRdr->getVal("n_p");
    pSoft = new double [n_pSoft];
@@ -101,18 +118,32 @@ QGP_2to2_Scattering::~QGP_2to2_Scattering()
 
    delete[] ktilde_pt;
 
-   delete[] qtilde_pt;
-   delete[] qtilde_weight;
-   delete[] qtilde_pt_standard;
-   delete[] qtilde_weight_standard;
-   delete[] omega_pt;
-   delete[] omega_weight;
-   delete[] omega_pt_standard;
-   delete[] omega_weight_standard;
-   delete[] pprime_pt;
-   delete[] pprime_weight;
-   delete[] pprime_pt_standard;
-   delete[] pprime_weight_standard;
+   delete[] qtilde_I1_pt;
+   delete[] qtilde_I1_weight;
+   delete[] qtilde_I1_pt_standard;
+   delete[] qtilde_I1_weight_standard;
+   delete[] qtilde_I2_pt;
+   delete[] qtilde_I2_weight;
+   delete[] qtilde_I2_pt_standard;
+   delete[] qtilde_I2_weight_standard;
+
+   delete[] omega_I1_pt;
+   delete[] omega_I1_weight;
+   delete[] omega_I1_pt_standard;
+   delete[] omega_I1_weight_standard;
+   delete[] omega_I2_pt;
+   delete[] omega_I2_weight;
+   delete[] omega_I2_pt_standard;
+   delete[] omega_I2_weight_standard;
+
+   delete[] pprime_I1_pt;
+   delete[] pprime_I1_weight;
+   delete[] pprime_I1_pt_standard;
+   delete[] pprime_I1_weight_standard;
+   delete[] pprime_I2_pt;
+   delete[] pprime_I2_weight;
+   delete[] pprime_I2_pt_standard;
+   delete[] pprime_I2_weight_standard;
 
    delete [] pSoft;
    delete [] pSoft_weight;
@@ -122,14 +153,16 @@ QGP_2to2_Scattering::~QGP_2to2_Scattering()
 
 void QGP_2to2_Scattering::set_gausspoints()
 {
-   gauss_quadrature_standard(n_qtilde, 1, 0.0, 0.0, 0.0, 1.0, qtilde_pt_standard, qtilde_weight_standard);
+   gauss_quadrature_standard(n_qtilde_I1, 1, 0.0, 0.0, 0.0, 1.0, qtilde_I1_pt_standard, qtilde_I1_weight_standard);
+   gauss_quadrature_standard(n_qtilde_I2, 4, 0.0, -0.8, 0.0, 1.0, qtilde_I2_pt_standard, qtilde_I2_weight_standard);
 
-   gauss_quadrature_standard(n_omega, 1, 0.0, 0.0, 0.0, 1.0, omega_pt_standard, omega_weight_standard);
+   gauss_quadrature_standard(n_omega_I1, 5, 0.0, 0.0, 0.0, 1.0, omega_I1_pt_standard, omega_I1_weight_standard);
+   gauss_quadrature_standard(n_omega_I2, 1, 0.0, 0.0, 0.0, 1.0, omega_I2_pt_standard, omega_I2_weight_standard);
    
-   gauss_quadrature_standard(n_pprime, 1, 0.0, 0.0, 0.0, 1.0, pprime_pt_standard, pprime_weight_standard);
+   gauss_quadrature_standard(n_pprime_I1, 1, 0.0, 0.0, 0.0, 1.0, pprime_I1_pt_standard, pprime_I1_weight_standard);
+   gauss_quadrature_standard(n_pprime_I2, 5, 0.0, 0.0, 0.0, 1.0, pprime_I2_pt_standard, pprime_I2_weight_standard);
   
    gauss_quadrature(n_theta, 1, 0.0, 0.0, -1., 1., costhetaSoft, costhetaSoft_weight);
-
 }
 
 void QGP_2to2_Scattering::buildupEmissionrate2DTable()
@@ -214,12 +247,12 @@ void QGP_2to2_Scattering::calculateEmissionrates_I1(int channel_in, string filen
        double equilibrium_result_omega = 0.0;
        double viscous_result_omega = 0.0;
 
-       for(int k=0; k<n_omega; k++)
+       for(int k=0; k<n_omega_I1; k++)
        {
-          Integrate_I1_qtilde(ktilde, omega_pt[k], results);
+          Integrate_I1_qtilde(ktilde, omega_I1_pt[k], results);
 
-          equilibrium_result_omega += results[0]*omega_weight[k];
-          viscous_result_omega += results[1]*omega_weight[k];
+          equilibrium_result_omega += results[0]*omega_I1_weight[k];
+          viscous_result_omega += results[1]*omega_I1_weight[k];
        }
        equilibriumTilde_results[i] = equilibrium_result_omega*prefactor/pow(hbarC, 4); // convert units to 1/(GeV^2 fm^4) for the emission rates
        viscousTilde_results[i] = viscous_result_omega*prefactor/(ktilde*ktilde)/pow(hbarC, 4); // convert units to 1/(GeV^2 fm^4) for the emission rates
@@ -235,15 +268,14 @@ void QGP_2to2_Scattering::calculateEmissionrates_I1(int channel_in, string filen
 void QGP_2to2_Scattering::scale_gausspoints_omega(double ktilde)
 {
    double omega_min = ktilde;
-   double omega_max = paraRdr->getVal("omega_max");
-   if( ktilde*200 > omega_max) omega_max = ktilde*200;
   
-   for(int i=0; i < n_omega; i++)
+   for(int i=0; i < n_omega_I1; i++)
    {
-      omega_pt[i] = omega_pt_standard[i];
-      omega_weight[i] = omega_weight_standard[i];
+      omega_I1_pt[i] = omega_I1_pt_standard[i];
+      omega_I1_weight[i] = omega_I1_weight_standard[i];
    }
-   scale_gausspoints(n_omega, 1, 0.0, 0.0, omega_min, omega_max, omega_pt, omega_weight);
+   double slope = 1.0;
+   scale_gausspoints(n_omega_I1, 5, 0.0, 0.0, omega_min, slope, omega_I1_pt, omega_I1_weight);
   
 }
 
@@ -254,17 +286,17 @@ void QGP_2to2_Scattering::Integrate_I1_qtilde(double ktilde, double omega, doubl
 
    double qtilde_min = fabs(2.*ktilde - omega);
    double qtilde_max = omega;
-   for(int i = 0; i < n_qtilde; i++)
+   for(int i = 0; i < n_qtilde_I1; i++)
    {
-      qtilde_pt[i] = qtilde_pt_standard[i];
-      qtilde_weight[i] = qtilde_weight_standard[i];
+      qtilde_I1_pt[i] = qtilde_I1_pt_standard[i];
+      qtilde_I1_weight[i] = qtilde_I1_weight_standard[i];
    }
-   scale_gausspoints(n_qtilde, 1, 0.0, 0.0, qtilde_min, qtilde_max, qtilde_pt, qtilde_weight);
-   for(int i = 0; i < n_qtilde; i++)
+   scale_gausspoints(n_qtilde_I1, 1, 0.0, 0.0, qtilde_min, qtilde_max, qtilde_I1_pt, qtilde_I1_weight);
+   for(int i = 0; i < n_qtilde_I1; i++)
    {
-      Integrate_I1_pprime(ktilde, omega, qtilde_pt[i], results);
-      equilibrium_result += results[0]*qtilde_weight[i];
-      viscous_result += results[1]*qtilde_weight[i];
+      Integrate_I1_pprime(ktilde, omega, qtilde_I1_pt[i], results);
+      equilibrium_result += results[0]*qtilde_I1_weight[i];
+      viscous_result += results[1]*qtilde_I1_weight[i];
    }
 
    results[0] = equilibrium_result;
@@ -276,29 +308,29 @@ void QGP_2to2_Scattering::Integrate_I1_pprime(double ktilde, double omega, doubl
    double equilibrium_result = 0.0e0;
    double viscous_result = 0.0e0;
 
-   double pprime_min = (omega - qtilde)/2.;
-   double pprime_max_I1 = (omega + qtilde)/2.;
-   for(int i = 0; i < n_pprime; i++)
+   double pprime_I1_min = (omega - qtilde)/2.;
+   pprime_max_I1 = (omega + qtilde)/2.;
+   for(int i = 0; i < n_pprime_I1; i++)
    {
-      pprime_pt[i] = pprime_pt_standard[i];
-      pprime_weight[i] = pprime_weight_standard[i];
+      pprime_I1_pt[i] = pprime_I1_pt_standard[i];
+      pprime_I1_weight[i] = pprime_I1_weight_standard[i];
    }
-   scale_gausspoints(n_pprime, 1, 0.0, 0.0, pprime_min, pprime_max_I1, pprime_pt, pprime_weight);
+   scale_gausspoints(n_pprime_I1, 1, 0.0, 0.0, pprime_I1_min, pprime_max_I1, pprime_I1_pt, pprime_I1_weight);
 
    double manderstan_s = omega*omega - qtilde*qtilde;
    double cos_theta_kq = (qtilde*qtilde - omega*omega + 2.*omega*ktilde)/(2.*qtilde*ktilde);
    double sin_theta_kq = sqrt(1. - cos_theta_kq*cos_theta_kq);
 
    // - t/s term
-   for(int i = 0; i < n_pprime; i++)
+   for(int i = 0; i < n_pprime_I1; i++)
    {
-      double pprime = pprime_pt[i];
+      double pprime = pprime_I1_pt[i];
       double cos_theta_pprimeq = (qtilde*qtilde - omega*omega + 2.*omega*pprime)/(2.*pprime*qtilde);
       double sin_theta_pprimeq = sqrt(1. - cos_theta_pprimeq*cos_theta_pprimeq);
       double f0_E1 = Bose_distribution(omega-pprime);
       double f0_E2 = Fermi_distribution(pprime);
       double f0_E3 = Fermi_distribution(omega-ktilde);
-      double eq_integrand = 2.*ktilde/manderstan_s*((omega - pprime) - cos_theta_kq*(qtilde - pprime*cos_theta_pprimeq))*f0_E1*f0_E2*(1. - f0_E3);
+      double eq_integrand = 2.*ktilde*pprime/manderstan_s*(1. - cos_theta_kq*cos_theta_pprimeq)*f0_E1*f0_E2*(1. - f0_E3);
       double vis_integrand = eq_integrand*((1. + f0_E1)*deltaf_chi(omega-pprime)*(-0.5 + 1.5*Power(1./(omega - pprime), 2)*(qtilde*qtilde*cos_theta_kq*cos_theta_kq + 0.5*pprime*pprime*sin_theta_kq*sin_theta_kq*sin_theta_pprimeq*sin_theta_pprimeq + pprime*pprime*cos_theta_kq*cos_theta_kq*cos_theta_pprimeq*cos_theta_pprimeq + 2.*qtilde*pprime*cos_theta_pprimeq*cos_theta_kq*cos_theta_kq) )
                                           +(1. - f0_E2)*deltaf_chi(pprime)*(-0.5 + 1.5*(cos_theta_kq*cos_theta_kq*cos_theta_pprimeq*cos_theta_pprimeq + 0.5*sin_theta_kq*sin_theta_kq*sin_theta_pprimeq*sin_theta_pprimeq))
                                           -f0_E3*deltaf_chi(omega-ktilde)*(-0.5 + 1.5*Power((qtilde*cos_theta_kq - ktilde)/(omega - ktilde), 2))
@@ -307,8 +339,8 @@ void QGP_2to2_Scattering::Integrate_I1_pprime(double ktilde, double omega, doubl
                              *( (1. - f0_E2)*deltaf_chi(pprime)*(3.*sin_theta_kq*cos_theta_kq*sin_theta_pprimeq*cos_theta_pprimeq)
                                +(1. + f0_E1)*deltaf_chi(omega - pprime)*(3.*Power(1./(omega - pprime), 2)*(- pprime*qtilde*sin_theta_kq*cos_theta_kq*sin_theta_pprimeq - pprime*pprime*sin_theta_pprimeq*cos_theta_pprimeq*sin_theta_kq*cos_theta_kq))
                               );
-      equilibrium_result += eq_integrand*pprime_weight[i];
-      viscous_result += vis_integrand*pprime_weight[i];
+      equilibrium_result += eq_integrand*pprime_I1_weight[i];
+      viscous_result += vis_integrand*pprime_I1_weight[i];
    }
 
    results[0] = equilibrium_result;
@@ -338,12 +370,12 @@ void QGP_2to2_Scattering::calculateEmissionrates_I2(int channel_in, string filen
        double equilibrium_result_qtilde = 0.0;
        double viscous_result_qtilde = 0.0;
 
-       for(int k=0; k<n_qtilde; k++)
+       for(int k=0; k<n_qtilde_I2; k++)
        {
-          Integrate_I2_omega(ktilde, qtilde_pt[k], results);
+          Integrate_I2_omega(ktilde, qtilde_I2_pt[k], results);
 
-          equilibrium_result_qtilde += results[0]*qtilde_weight[k];
-          viscous_result_qtilde += results[1]*qtilde_weight[k];
+          equilibrium_result_qtilde += results[0]*qtilde_I2_weight[k];
+          viscous_result_qtilde += results[1]*qtilde_I2_weight[k];
        }
        equilibriumTilde_results[i] = equilibrium_result_qtilde*prefactor/pow(hbarC, 4); // convert units to 1/(GeV^2 fm^4) for the emission rates
        viscousTilde_results[i] = viscous_result_qtilde*prefactor/(ktilde*ktilde)/pow(hbarC, 4); // convert units to 1/(GeV^2 fm^4) for the emission rates
@@ -362,14 +394,14 @@ void QGP_2to2_Scattering::scale_gausspoints_qtilde(double ktilde)
    qtilde_cutoff = sqrt(g_s);
    double qtilde_min = qtilde_cutoff;
    double qtilde_max = paraRdr->getVal("qtilde_max");
-   if( ktilde*200 > qtilde_max) qtilde_max = ktilde*200;
+   //if( ktilde*200 > qtilde_max) qtilde_max = ktilde*200;
   
-   for(int i=0; i < n_qtilde; i++)
+   for(int i=0; i < n_qtilde_I2; i++)
    {
-      qtilde_pt[i] = qtilde_pt_standard[i];
-      qtilde_weight[i] = qtilde_weight_standard[i];
+      qtilde_I2_pt[i] = qtilde_I2_pt_standard[i];
+      qtilde_I2_weight[i] = qtilde_I2_weight_standard[i];
    }
-   scale_gausspoints(n_qtilde, 1, 0.0, 0.0, qtilde_min, qtilde_max, qtilde_pt, qtilde_weight);
+   scale_gausspoints(n_qtilde_I2, 4, 0.0, -0.8, qtilde_min, qtilde_max, qtilde_I2_pt, qtilde_I2_weight);
   
 }
 
@@ -382,17 +414,17 @@ void QGP_2to2_Scattering::Integrate_I2_omega(double ktilde, double qtilde, doubl
    if(omega_min < - qtilde)
       omega_min = - qtilde;
    double omega_max = qtilde;
-   for(int i = 0; i < n_omega; i++)
+   for(int i = 0; i < n_omega_I2; i++)
    {
-      omega_pt[i] = omega_pt_standard[i];
-      omega_weight[i] = omega_weight_standard[i];
+      omega_I2_pt[i] = omega_I2_pt_standard[i];
+      omega_I2_weight[i] = omega_I2_weight_standard[i];
    }
-   scale_gausspoints(n_omega, 1, 0.0, 0.0, omega_min, omega_max, omega_pt, omega_weight);
-   for(int i = 0; i < n_omega; i++)
+   scale_gausspoints(n_omega_I2, 1, 0.0, 0.0, omega_min, omega_max, omega_I2_pt, omega_I2_weight);
+   for(int i = 0; i < n_omega_I2; i++)
    {
-      Integrate_I2_pprime(ktilde, qtilde, omega_pt[i], results);
-      equilibrium_result += results[0]*omega_weight[i];
-      viscous_result += results[1]*omega_weight[i];
+      Integrate_I2_pprime(ktilde, qtilde, omega_I2_pt[i], results);
+      equilibrium_result += results[0]*omega_I2_weight[i];
+      viscous_result += results[1]*omega_I2_weight[i];
    }
 
    results[0] = equilibrium_result;
@@ -405,12 +437,13 @@ void QGP_2to2_Scattering::Integrate_I2_pprime(double ktilde, double qtilde, doub
    double viscous_result = 0.0e0;
 
    double pprime_min = (qtilde - omega)/2.;
-   for(int i = 0; i < n_pprime; i++)
+   for(int i = 0; i < n_pprime_I2; i++)
    {
-      pprime_pt[i] = pprime_pt_standard[i];
-      pprime_weight[i] = pprime_weight_standard[i];
+      pprime_I2_pt[i] = pprime_I2_pt_standard[i];
+      pprime_I2_weight[i] = pprime_I2_weight_standard[i];
    }
-   scale_gausspoints(n_pprime, 1, 0.0, 0.0, pprime_min, pprime_max, pprime_pt, pprime_weight);
+   double slope = 1.0;
+   scale_gausspoints(n_pprime_I2, 5, 0.0, 0.0, pprime_min, slope, pprime_I2_pt, pprime_I2_weight);
 
    double manderstan_t = omega*omega - qtilde*qtilde;
    double cos_theta_kq = (omega*omega - qtilde*qtilde + 2.*omega*ktilde)/(2.*qtilde*ktilde);
@@ -418,9 +451,9 @@ void QGP_2to2_Scattering::Integrate_I2_pprime(double ktilde, double qtilde, doub
 
    double term_st, term_ut, term_st_vis, term_ut_vis;
    // - s/t term
-   for(int i = 0; i < n_pprime; i++)
+   for(int i = 0; i < n_pprime_I2; i++)
    {
-      double pprime = pprime_pt[i];
+      double pprime = pprime_I2_pt[i];
       double cos_theta_pprimeq = (omega*omega - qtilde*qtilde + 2.*omega*pprime)/(2.*pprime*qtilde);
       double sin_theta_pprimeq = sqrt(1. - cos_theta_pprimeq*cos_theta_pprimeq);
       double f0_E1 = Bose_distribution(omega+ktilde);
@@ -435,17 +468,17 @@ void QGP_2to2_Scattering::Integrate_I2_pprime(double ktilde, double qtilde, doub
                              *( (1. - f0_E2)*deltaf_chi(pprime)*(3.*sin_theta_kq*cos_theta_kq*sin_theta_pprimeq*cos_theta_pprimeq)
                                +f0_E3*deltaf_chi(pprime+omega)*(3.*Power(1./(pprime+omega), 2)*(pprime*qtilde*sin_theta_kq*cos_theta_kq*sin_theta_pprimeq + pprime*pprime*sin_theta_pprimeq*cos_theta_pprimeq*sin_theta_kq*cos_theta_kq))
                               );
-      equilibrium_result += eq_integrand*pprime_weight[i];
-      viscous_result += vis_integrand*pprime_weight[i];
+      equilibrium_result += eq_integrand*pprime_I2_weight[i];
+      viscous_result += vis_integrand*pprime_I2_weight[i];
    }
    term_st = equilibrium_result;
    term_st_vis = viscous_result;
    //u/t term
    equilibrium_result = 0.0;
    viscous_result = 0.0;
-   for(int i = 0; i < n_pprime; i++)
+   for(int i = 0; i < n_pprime_I2; i++)
    {
-      double pprime = pprime_pt[i];
+      double pprime = pprime_I2_pt[i];
       double cos_theta_pprimeq = (omega*omega - qtilde*qtilde + 2.*omega*pprime)/(2.*pprime*qtilde);
       double sin_theta_pprimeq = sqrt(1. - cos_theta_pprimeq*cos_theta_pprimeq);
       double f0_E1 = Fermi_distribution(omega+ktilde);
@@ -460,8 +493,8 @@ void QGP_2to2_Scattering::Integrate_I2_pprime(double ktilde, double qtilde, doub
                              *( (1. - f0_E2)*deltaf_chi(pprime)*(3.*sin_theta_kq*cos_theta_kq*sin_theta_pprimeq*cos_theta_pprimeq)
                                +f0_E3*deltaf_chi(pprime+omega)*(3.*Power(1./(pprime+omega), 2)*(pprime*qtilde*sin_theta_kq*cos_theta_kq*sin_theta_pprimeq + pprime*pprime*sin_theta_pprimeq*cos_theta_pprimeq*sin_theta_kq*cos_theta_kq))
                               );
-      equilibrium_result += eq_integrand*pprime_weight[i];
-      viscous_result += vis_integrand*pprime_weight[i];
+      equilibrium_result += eq_integrand*pprime_I2_weight[i];
+      viscous_result += vis_integrand*pprime_I2_weight[i];
    }
    term_ut = equilibrium_result;
    term_ut_vis = viscous_result;

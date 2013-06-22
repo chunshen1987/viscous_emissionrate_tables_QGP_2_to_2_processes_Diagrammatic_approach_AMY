@@ -41,13 +41,21 @@ class QGP_2to2_Scattering
       double *equilibriumTilde_results, *viscousTilde_results;
 
       // Gaussian quadrature points for phase space integrations 
-      int n_qtilde;
-      double *qtilde_pt, *qtilde_weight, *qtilde_pt_standard, *qtilde_weight_standard;
-      int n_omega;
-      double *omega_pt, *omega_weight, *omega_pt_standard, *omega_weight_standard;
-      int n_pprime;
-      double pprime_max;
-      double *pprime_pt, *pprime_weight, *pprime_pt_standard, *pprime_weight_standard;
+      int n_qtilde_I1;
+      double *qtilde_I1_pt, *qtilde_I1_weight, *qtilde_I1_pt_standard, *qtilde_I1_weight_standard;
+      int n_qtilde_I2;
+      double *qtilde_I2_pt, *qtilde_I2_weight, *qtilde_I2_pt_standard, *qtilde_I2_weight_standard;
+
+      int n_omega_I1;
+      double *omega_I1_pt, *omega_I1_weight, *omega_I1_pt_standard, *omega_I1_weight_standard;
+      int n_omega_I2;
+      double *omega_I2_pt, *omega_I2_weight, *omega_I2_pt_standard, *omega_I2_weight_standard;
+
+      int n_pprime_I1;
+      double pprime_max_I1;
+      double *pprime_I1_pt, *pprime_I1_weight, *pprime_I1_pt_standard, *pprime_I1_weight_standard;
+      int n_pprime_I2;
+      double *pprime_I2_pt, *pprime_I2_weight, *pprime_I2_pt_standard, *pprime_I2_weight_standard;
 
       // Gaussian quadrature points for soft momentum region
       int n_pSoft;
