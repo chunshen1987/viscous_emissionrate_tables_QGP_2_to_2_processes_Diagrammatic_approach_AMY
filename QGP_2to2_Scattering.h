@@ -56,8 +56,10 @@ class QGP_2to2_Scattering
       int n_pprime_I1;
       double pprime_max_I1;
       double *pprime_I1_pt, *pprime_I1_weight, *pprime_I1_pt_standard, *pprime_I1_weight_standard;
-      int n_pprime_I2;
-      double *pprime_I2_pt, *pprime_I2_weight, *pprime_I2_pt_standard, *pprime_I2_weight_standard;
+      int n_pprime_I2_1;
+      double *pprime_I2_1_pt, *pprime_I2_1_weight, *pprime_I2_1_pt_standard, *pprime_I2_1_weight_standard;
+      int n_pprime_I2_2;
+      double *pprime_I2_2_pt, *pprime_I2_2_weight, *pprime_I2_2_pt_standard, *pprime_I2_2_weight_standard;
 
       // Gaussian quadrature points for soft momentum region
       int n_pSoft;

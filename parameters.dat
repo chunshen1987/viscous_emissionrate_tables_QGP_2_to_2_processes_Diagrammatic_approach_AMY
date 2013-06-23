@@ -7,13 +7,14 @@ n_ktilde = 1
 ktilde_i = 10
 ktilde_max = 50
 
-n_qtilde_I1 = 50
+n_qtilde_I1 = 100
 n_qtilde_I2_1 = 100
 n_qtilde_I2_2 = 20
 n_omega_I1 = 20
 n_omega_I2 = 80
-n_pprime_I1 = 100
-n_pprime_I2 = 200
+n_pprime_I1 = 200
+n_pprime_I2_1 = 200
+n_pprime_I2_2 = 40
 
 # parameters for output photon emission rate table
 n_Eq = 1
