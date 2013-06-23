@@ -75,4 +75,9 @@ install:	$(TARGET)
 		cp $(TARGET) $(INSTPATH)
 
 # --------------- Dependencies -------------------
-
+main.cpp : Arsenal.h Stopwatch.h QGP_2to2_Scattering.h ParameterReader.h
+QGP_2to2_Scattering.cpp : QGP_2to2_Scattering.h Physicalconstants.h ParameterReader.h gauss_quadrature.h Arsenal.h
+ParameterReader.cpp : ParameterReader.h Arsenal.h
+Arsenal.cpp : Arsenal.h
+Physicalconstants.cpp : Physicalconstants.h
+gauss_quadrature.cpp : gauss_quadrature.h
