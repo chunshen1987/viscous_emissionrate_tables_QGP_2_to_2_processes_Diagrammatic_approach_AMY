@@ -77,13 +77,14 @@ class QGP_2to2_Scattering
       void output_emissionrateTable();
 
       void set_gausspoints();
-      
-      void calculateEmissionrates_I1(int channel_in, string filename_in);
+     
+      void calculateEmissionrates_hard(string filename);
+      void calculateEmissionrates_I1();
       void scale_gausspoints_omega(double ktilde);
       void Integrate_I1_qtilde(double ktilde, double omega, double* results);
       void Integrate_I1_pprime(double ktilde, double omega, double qtilde, double* results);
 
-      void calculateEmissionrates_I2(int channel, string filename);
+      void calculateEmissionrates_I2();
       void scale_gausspoints_qtilde(double ktilde);
       void Integrate_I2_omega(double ktilde, double qtilde, double* results);
       void Integrate_I2_pprime(double ktilde, double qtilde, double omega, double* results);

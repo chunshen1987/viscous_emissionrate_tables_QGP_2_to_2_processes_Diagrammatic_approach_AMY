@@ -244,7 +244,17 @@ void QGP_2to2_Scattering::output_emissionrateTable()
    of_viscous.close();
 }
 
-void QGP_2to2_Scattering::calculateEmissionrates_I1(int channel_in, string filename_in)
+void QGP_2to2_Scattering::calculateEmissionrates_hard(string filename_in)
+{
+   filename = filename_in;
+   calculateEmissionrates_I1();
+   calculateEmissionrates_I2();
+   buildupEmissionrate2DTable();
+   output_emissionrateTable();
+
+}
+
+void QGP_2to2_Scattering::calculateEmissionrates_I1()
 {
    double hbarC = Phycons.get_hbarC();
    double e_sq = Phycons.get_e_sq();
@@ -252,8 +262,6 @@ void QGP_2to2_Scattering::calculateEmissionrates_I1(int channel_in, string filen
    double d_F = Phycons.get_d_F();
    double C_F = Phycons.get_C_F();
    double g_s = Phycons.get_g_s_const();
-   channel = channel_in;
-   filename = filename_in;
 
    double *results = new double [2];
    for(int i=0; i<n_ktilde; i++)
@@ -277,9 +285,6 @@ void QGP_2to2_Scattering::calculateEmissionrates_I1(int channel_in, string filen
        equilibriumTilde_results[i] = equilibrium_result_omega*prefactor/pow(hbarC, 4); // convert units to 1/(GeV^2 fm^4) for the emission rates
        viscousTilde_results[i] = viscous_result_omega*prefactor/(ktilde*ktilde)/pow(hbarC, 4); // convert units to 1/(GeV^4 fm^4) for the emission rates
        
-       cout << equilibriumTilde_results[i]*pow(hbarC,4) << endl;
-       cout << viscousTilde_results[i]*pow(hbarC, 4) << endl;
-
    }
    
    delete [] results;
@@ -371,7 +376,7 @@ void QGP_2to2_Scattering::Integrate_I1_pprime(double ktilde, double omega, doubl
    results[1] = viscous_result;
 }
 
-void QGP_2to2_Scattering::calculateEmissionrates_I2(int channel_in, string filename_in)
+void QGP_2to2_Scattering::calculateEmissionrates_I2()
 {
    double hbarC = Phycons.get_hbarC();
    double e_sq = Phycons.get_e_sq();
@@ -379,8 +384,6 @@ void QGP_2to2_Scattering::calculateEmissionrates_I2(int channel_in, string filen
    double d_F = Phycons.get_d_F();
    double C_F = Phycons.get_C_F();
    double g_s = Phycons.get_g_s_const();
-   channel = channel_in;
-   filename = filename_in;
 
    double *results = new double [2];
    for(int i=0; i<n_ktilde; i++)
@@ -408,11 +411,9 @@ void QGP_2to2_Scattering::calculateEmissionrates_I2(int channel_in, string filen
           equilibrium_result_qtilde += results[0]*qtilde_I2_2_weight[k];
           viscous_result_qtilde += results[1]*qtilde_I2_2_weight[k];
        }
-       equilibriumTilde_results[i] = equilibrium_result_qtilde*prefactor/pow(hbarC, 4); // convert units to 1/(GeV^2 fm^4) for the emission rates
-       viscousTilde_results[i] = viscous_result_qtilde*prefactor/(ktilde*ktilde)/pow(hbarC, 4); // convert units to 1/(GeV^4 fm^4) for the emission rates
+       equilibriumTilde_results[i] += equilibrium_result_qtilde*prefactor/pow(hbarC, 4); // convert units to 1/(GeV^2 fm^4) for the emission rates
+       viscousTilde_results[i] += viscous_result_qtilde*prefactor/(ktilde*ktilde)/pow(hbarC, 4); // convert units to 1/(GeV^4 fm^4) for the emission rates
        
-       cout << equilibriumTilde_results[i]*pow(hbarC,4) << endl;
-       cout << viscousTilde_results[i]*pow(hbarC, 4) << endl;
    }
    
    delete [] results;

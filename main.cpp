@@ -18,8 +18,7 @@ int main(int argc, char** argv)
 {
    Stopwatch sw; 
    sw.tic();
-
-   int channel = 0;
+   
    string filename;
    
    ParameterReader* paraRdr = new ParameterReader();
@@ -29,14 +28,8 @@ int main(int argc, char** argv)
    QGP_2to2_Scattering test(paraRdr);
 
    //Compton Scattering
-   filename = "QGP_2to2_Compton";
-   channel = 1;
-   test.calculateEmissionrates_I1(channel, filename);
-
-   //Pair Annihilation
-   filename = "QGP_2to2_PairAnnihilation";
-   channel = 2;
-   test.calculateEmissionrates_I2(channel, filename);
+   filename = "QGP_2to2_hard";
+   test.calculateEmissionrates_hard(filename);
    
    //Calculate photon polarization tensor for soft momentum contribution
    filename = "QGP_2to2_soft";
