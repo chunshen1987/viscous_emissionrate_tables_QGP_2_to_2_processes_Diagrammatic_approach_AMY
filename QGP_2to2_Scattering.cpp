@@ -424,7 +424,7 @@ void QGP_2to2_Scattering::scale_gausspoints_qtilde(double ktilde)
    double g_s = Phycons.get_g_s_const();
    qtilde_cutoff = sqrt(g_s);
    double qtilde_min_1 = qtilde_cutoff;
-   double qtilde_max_1 = ktilde;
+   double qtilde_max_1 = qtilde_min_1 + ktilde;
    double qtilde_min_2 = qtilde_max_1;
   
    for(int i=0; i < n_qtilde_I2_1; i++)
@@ -474,7 +474,7 @@ void QGP_2to2_Scattering::Integrate_I2_pprime(double ktilde, double qtilde, doub
 {
    double equilibrium_result = 0.0e0;
    double viscous_result = 0.0e0;
-
+   
    double pprime_min_1 = (qtilde - omega)/2.;
    double pprime_max_1 = pprime_min_1+1.0;
    double pprime_min_2 = pprime_max_1;
@@ -513,7 +513,7 @@ void QGP_2to2_Scattering::Integrate_I2_pprime(double ktilde, double qtilde, doub
       double eq_integrand = (1. - 2.*pprime*ktilde/manderstan_t*(1. - cos_theta_pprimeq*cos_theta_kq))*f0_E1*f0_E2*(1. - f0_E3);
       double vis_integrand = eq_integrand*((1. - f0_E1)*deltaf_chi(omega+ktilde)*(-0.5 + 1.5*Power((qtilde*cos_theta_kq + ktilde)/(omega + ktilde), 2))
                                           +(1. + f0_E2)*deltaf_chi(pprime)*(-0.5 + 1.5*(cos_theta_kq_sq*cos_theta_pprimeq_sq + 0.5*sin_theta_kq_sq*sin_theta_pprimeq_sq))
-                                          -f0_E3*deltaf_chi(pprime+omega)*(-0.5 + 1.5*Power(1./(pprime+omega), 2)*(Power((pprime*cos_theta_pprimeq - qtilde)*cos_theta_kq, 2) + 0.5*pprime*pprime*sin_theta_kq_sq*sin_theta_pprimeq_sq))
+                                          -f0_E3*deltaf_chi(pprime+omega)*(-0.5 + 1.5*Power(1./(pprime+omega), 2)*(Power((pprime*cos_theta_pprimeq + qtilde)*cos_theta_kq, 2) + 0.5*pprime*pprime*sin_theta_kq_sq*sin_theta_pprimeq_sq))
                                           )
                             + (2.*pprime*ktilde)/manderstan_t*sin_theta_kq*sin_theta_pprimeq*f0_E1*f0_E2*(1. - f0_E3)
                              *( (1. + f0_E2)*deltaf_chi(pprime)*(1.5*sin_theta_kq*cos_theta_kq*sin_theta_pprimeq*cos_theta_pprimeq)
@@ -535,7 +535,7 @@ void QGP_2to2_Scattering::Integrate_I2_pprime(double ktilde, double qtilde, doub
       double eq_integrand = (1. - 2.*pprime*ktilde/manderstan_t*(1. - cos_theta_pprimeq*cos_theta_kq))*f0_E1*f0_E2*(1. - f0_E3);
       double vis_integrand = eq_integrand*((1. - f0_E1)*deltaf_chi(omega+ktilde)*(-0.5 + 1.5*Power((qtilde*cos_theta_kq + ktilde)/(omega + ktilde), 2))
                                           +(1. + f0_E2)*deltaf_chi(pprime)*(-0.5 + 1.5*(cos_theta_kq_sq*cos_theta_pprimeq_sq + 0.5*sin_theta_kq_sq*sin_theta_pprimeq_sq))
-                                          -f0_E3*deltaf_chi(pprime+omega)*(-0.5 + 1.5*Power(1./(pprime+omega), 2)*(Power((pprime*cos_theta_pprimeq - qtilde)*cos_theta_kq, 2) + 0.5*pprime*pprime*sin_theta_kq_sq*sin_theta_pprimeq_sq))
+                                          -f0_E3*deltaf_chi(pprime+omega)*(-0.5 + 1.5*Power(1./(pprime+omega), 2)*(Power((pprime*cos_theta_pprimeq + qtilde)*cos_theta_kq, 2) + 0.5*pprime*pprime*sin_theta_kq_sq*sin_theta_pprimeq_sq))
                                           )
                             + (2.*pprime*ktilde)/manderstan_t*sin_theta_kq*sin_theta_pprimeq*f0_E1*f0_E2*(1. - f0_E3)
                              *( (1. + f0_E2)*deltaf_chi(pprime)*(1.5*sin_theta_kq*cos_theta_kq*sin_theta_pprimeq*cos_theta_pprimeq)

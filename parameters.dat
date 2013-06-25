@@ -1,10 +1,10 @@
-deltaf_alpha = 1   # the exponent of the p dependence of the delta f correction deltaf_alpha = 2 for democratic choice
+deltaf_alpha = 2   # the exponent of the p dependence of the delta f correction deltaf_alpha = 2 for democratic choice
 
 n_p = 100
 n_theta = 100
 
 n_ktilde = 1
-ktilde_i = 10
+ktilde_i = 1.0
 ktilde_max = 50
 
 n_qtilde_I1 = 100
