@@ -11,6 +11,7 @@ class Physicalconstants
       double N_c;
       double C_F;
       double d_F;
+      double N_F;
 
       double g_s;
 
@@ -26,6 +27,7 @@ class Physicalconstants
       double get_d_F() {return(d_F);};
       double get_N_c() {return(N_c);};
       double get_g_s_const() {return(g_s);};
+      double get_g_s_running(double T);
 };
 
 #endif

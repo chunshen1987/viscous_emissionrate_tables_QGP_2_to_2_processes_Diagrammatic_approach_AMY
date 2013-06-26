@@ -187,6 +187,12 @@ void QGP_2to2_Scattering::set_gausspoints()
 
 void QGP_2to2_Scattering::buildupEmissionrate2DTable()
 {
+   double hbarC = Phycons.get_hbarC();
+   double e_sq = Phycons.get_e_sq();
+   double q_sq = Phycons.get_q_sq();
+   double d_F = Phycons.get_d_F();
+   double C_F = Phycons.get_C_F();
+
    double *ktildeT = new double [n_Eq];
    double *rawResult_eq = new double [n_Eq];
    double *rawResult_vis = new double [n_Eq];
@@ -200,6 +206,9 @@ void QGP_2to2_Scattering::buildupEmissionrate2DTable()
    for(int j = 0; j < n_Temp; j++)
    {
       double T = T_tb[j];
+      
+      double g_s = Phycons.get_g_s_const();
+      double prefactor = e_sq*q_sq*d_F*C_F*g_s*g_s;
       for(int i = 0; i < n_Eq; i++)
          ktildeT[i] = Eq_tb[i]/T;
       interpolation1D_linear(ktilde_pt, log_eq, ktildeT, rawResult_eq, n_ktilde, n_Eq);
@@ -207,8 +216,10 @@ void QGP_2to2_Scattering::buildupEmissionrate2DTable()
       for(int i = 0; i < n_Eq; i++)
       {
          double temp = exp(rawResult_eq[i]);
-         equilibrium_results[i][j] = T*T*temp;
-         viscous_results[i][j] = rawResult_vis[i]*temp;
+         equilibrium_results[i][j] = T*T*temp*prefactor/pow(hbarC, 4);   // convert units to 1/(GeV^2 fm^4) for the emission rates
+
+         viscous_results[i][j] = rawResult_vis[i]*temp*prefactor/pow(hbarC, 4);   // convert units to 1/(GeV^2 fm^4) for the emission rates
+
       }
    }
    delete [] ktildeT;
@@ -256,19 +267,12 @@ void QGP_2to2_Scattering::calculateEmissionrates_hard(string filename_in)
 
 void QGP_2to2_Scattering::calculateEmissionrates_I1()
 {
-   double hbarC = Phycons.get_hbarC();
-   double e_sq = Phycons.get_e_sq();
-   double q_sq = Phycons.get_q_sq();
-   double d_F = Phycons.get_d_F();
-   double C_F = Phycons.get_C_F();
-   double g_s = Phycons.get_g_s_const();
-
    double *results = new double [2];
    for(int i=0; i<n_ktilde; i++)
    {
        double ktilde = ktilde_pt[i];
 
-       double prefactor = 1./(pow(2.0*M_PI, 6)*ktilde)*e_sq*q_sq*d_F*C_F*g_s*g_s;
+       double prefactor = 1./(16.*pow(2.0*M_PI, 6)*ktilde);
 
        scale_gausspoints_omega(ktilde);
 
@@ -282,8 +286,8 @@ void QGP_2to2_Scattering::calculateEmissionrates_I1()
           equilibrium_result_omega += results[0]*omega_I1_weight[k];
           viscous_result_omega += results[1]*omega_I1_weight[k];
        }
-       equilibriumTilde_results[i] = equilibrium_result_omega*prefactor/pow(hbarC, 4); // convert units to 1/(GeV^2 fm^4) for the emission rates
-       viscousTilde_results[i] = viscous_result_omega*prefactor/(ktilde*ktilde)/pow(hbarC, 4); // convert units to 1/(GeV^4 fm^4) for the emission rates
+       equilibriumTilde_results[i] = equilibrium_result_omega*prefactor;
+       viscousTilde_results[i] = viscous_result_omega*prefactor/(ktilde*ktilde);
        
    }
    
@@ -372,25 +376,18 @@ void QGP_2to2_Scattering::Integrate_I1_pprime(double ktilde, double omega, doubl
       viscous_result += vis_integrand*pprime_I1_weight[i];
    }
 
-   results[0] = equilibrium_result;
-   results[1] = viscous_result;
+   results[0] = 16.*equilibrium_result;
+   results[1] = 16.*viscous_result;
 }
 
 void QGP_2to2_Scattering::calculateEmissionrates_I2()
 {
-   double hbarC = Phycons.get_hbarC();
-   double e_sq = Phycons.get_e_sq();
-   double q_sq = Phycons.get_q_sq();
-   double d_F = Phycons.get_d_F();
-   double C_F = Phycons.get_C_F();
-   double g_s = Phycons.get_g_s_const();
-
    double *results = new double [2];
    for(int i=0; i<n_ktilde; i++)
    {
        double ktilde = ktilde_pt[i];
 
-       double prefactor = 1./(pow(2.0*M_PI, 6)*ktilde)*e_sq*q_sq*d_F*C_F*g_s*g_s;
+       double prefactor = 1./(16.*pow(2.0*M_PI, 6)*ktilde);
 
        scale_gausspoints_qtilde(ktilde);
 
@@ -411,8 +408,8 @@ void QGP_2to2_Scattering::calculateEmissionrates_I2()
           equilibrium_result_qtilde += results[0]*qtilde_I2_2_weight[k];
           viscous_result_qtilde += results[1]*qtilde_I2_2_weight[k];
        }
-       equilibriumTilde_results[i] += equilibrium_result_qtilde*prefactor/pow(hbarC, 4); // convert units to 1/(GeV^2 fm^4) for the emission rates
-       viscousTilde_results[i] += viscous_result_qtilde*prefactor/(ktilde*ktilde)/pow(hbarC, 4); // convert units to 1/(GeV^4 fm^4) for the emission rates
+       equilibriumTilde_results[i] += equilibrium_result_qtilde*prefactor;
+       viscousTilde_results[i] += viscous_result_qtilde*prefactor/(ktilde*ktilde);
        
    }
    
@@ -597,8 +594,8 @@ void QGP_2to2_Scattering::Integrate_I2_pprime(double ktilde, double qtilde, doub
    term_ut = equilibrium_result;
    term_ut_vis = viscous_result;
 
-   results[0] = term_st + term_ut;
-   results[1] = term_st_vis + term_ut_vis;
+   results[0] = 16.*(term_st + term_ut);
+   results[1] = 16.*(term_st_vis + term_ut_vis);
 }
 
 void QGP_2to2_Scattering::calculateEmissionrates_soft(string filename_in)
