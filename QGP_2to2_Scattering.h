@@ -73,7 +73,8 @@ class QGP_2to2_Scattering
       QGP_2to2_Scattering(ParameterReader* paraRdr_in);
       ~QGP_2to2_Scattering();
 
-      void buildupEmissionrate2DTable();
+      void buildupEmissionrate2DTable_hard();
+      void buildupEmissionrate2DTable_soft();
       void output_emissionrateTable();
 
       void set_gausspoints();

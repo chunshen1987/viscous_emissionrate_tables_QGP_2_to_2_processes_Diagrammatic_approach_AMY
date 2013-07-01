@@ -187,7 +187,51 @@ void QGP_2to2_Scattering::set_gausspoints()
    gauss_quadrature(n_theta, 1, 0.0, 0.0, -1., 1., costhetaSoft, costhetaSoft_weight);
 }
 
-void QGP_2to2_Scattering::buildupEmissionrate2DTable()
+void QGP_2to2_Scattering::buildupEmissionrate2DTable_hard()
+{
+   double hbarC = Phycons->get_hbarC();
+   double e_sq = Phycons->get_e_sq();
+   double q_sq = Phycons->get_q_sq();
+   double d_F = Phycons->get_d_F();
+   double C_F = Phycons->get_C_F();
+
+   double *ktildeT = new double [n_Eq];
+   double *rawResult_eq = new double [n_Eq];
+   double *rawResult_vis = new double [n_Eq];
+   double *log_eq = new double [n_ktilde];
+   double *scaled_vis = new double [n_ktilde];
+   for(int i = 0; i < n_ktilde; i++)
+   {
+      log_eq[i] = log(equilibriumTilde_results[i]);
+      scaled_vis[i] = viscousTilde_results[i]/equilibriumTilde_results[i];
+   }
+   for(int j = 0; j < n_Temp; j++)
+   {
+      double T = T_tb[j];
+      
+      double g_s = Phycons->get_g_s_const();
+      double prefactor = e_sq*q_sq*d_F*C_F*g_s*g_s;
+      for(int i = 0; i < n_Eq; i++)
+         ktildeT[i] = Eq_tb[i]/T;
+      interpolation1D_linear(ktilde_pt, log_eq, ktildeT, rawResult_eq, n_ktilde, n_Eq);
+      interpolation1D_linear(ktilde_pt, scaled_vis, ktildeT, rawResult_vis, n_ktilde, n_Eq);
+      for(int i = 0; i < n_Eq; i++)
+      {
+         double temp = exp(rawResult_eq[i]);
+         equilibrium_results[i][j] = T*T*temp*prefactor/pow(hbarC, 4);   // convert units to 1/(GeV^2 fm^4) for the emission rates
+
+         viscous_results[i][j] = rawResult_vis[i]*temp*prefactor/pow(hbarC, 4);   // convert units to 1/(GeV^2 fm^4) for the emission rates
+
+      }
+   }
+   delete [] ktildeT;
+   delete [] rawResult_eq;
+   delete [] rawResult_vis;
+   delete [] log_eq;
+   delete [] scaled_vis;
+}
+
+void QGP_2to2_Scattering::buildupEmissionrate2DTable_soft()
 {
    double hbarC = Phycons->get_hbarC();
    double e_sq = Phycons->get_e_sq();
@@ -262,9 +306,8 @@ void QGP_2to2_Scattering::calculateEmissionrates_hard(string filename_in)
    filename = filename_in;
    calculateEmissionrates_I1();
    calculateEmissionrates_I2();
-   buildupEmissionrate2DTable();
+   buildupEmissionrate2DTable_hard();
    output_emissionrateTable();
-
 }
 
 void QGP_2to2_Scattering::calculateEmissionrates_I1()
@@ -639,7 +682,7 @@ void QGP_2to2_Scattering::calculateEmissionrates_soft(string filename_in)
 
    }
    
-   buildupEmissionrate2DTable();
+   buildupEmissionrate2DTable_soft();
    output_emissionrateTable();
    delete [] results;
 }
@@ -721,10 +764,6 @@ void QGP_2to2_Scattering::getIntegrand(double ktilde, double ptilde, double cost
 void QGP_2to2_Scattering::get_quark_selfenergy_coefficients(double p_0_tilde, double p_i_tilde, Selfenergy_coefficients* Sigma_ptr)
 {
     double eps = 1e-10;
-    double g_s = Phycons->get_g_s_const();
-    double C_F = Phycons->get_C_F();
-
-    double omega_0_sq = g_s*g_s*C_F/8.0;
 
     double p0_tilde_sq = p_0_tilde*p_0_tilde;
     double p_tilde_sq = p_i_tilde*p_i_tilde;
@@ -734,8 +773,8 @@ void QGP_2to2_Scattering::get_quark_selfenergy_coefficients(double p_0_tilde, do
     double Im_Qx = - 0.5*(p_0_tilde/p_i_tilde)*M_PI;
     
     //Equilibrium quark self energy from Hard Thermal Loop Approximation
-    Sigma_ptr->Re_A0 = omega_0_sq/p_tilde_sq*(Re_Qx - 1.); 
-    Sigma_ptr->Re_B0 = omega_0_sq*((- p_0_tilde/p_tilde_sq + 1./p_0_tilde)*Re_Qx + p_0_tilde/p_tilde_sq);
+    Sigma_ptr->Re_A0 = 0.5*p_tilde_sq*(Re_Qx - 1.); 
+    Sigma_ptr->Re_B0 = 0.5*((- p_0_tilde/p_tilde_sq + 1./p_0_tilde)*Re_Qx + p_0_tilde/p_tilde_sq);
 
     double neq_coeff;
     if(fabs(deltaf_alpha - 2) < eps)
@@ -744,12 +783,12 @@ void QGP_2to2_Scattering::get_quark_selfenergy_coefficients(double p_0_tilde, do
        neq_coeff = (4./(M_PI*M_PI))*4.93480220;   // for deltaf_alpha = 1
 
     //Off-equilibrium corrections coefficients from Hard Loop Approximation
-    Sigma_ptr->Re_A1 = omega_0_sq*neq_coeff*1./(2.*p_tilde_cubic*p_tilde_cubic)
+    Sigma_ptr->Re_A1 = 0.5*neq_coeff*1./(2.*p_tilde_cubic*p_tilde_cubic)
                   *((5.*p0_tilde_sq - 3.*p_tilde_sq)*Re_Qx - 5.*p0_tilde_sq + 4./3.*p_tilde_sq);
-    Sigma_ptr->Re_B1 = omega_0_sq*neq_coeff*1./(2.*p_tilde_cubic*p_tilde_cubic)
+    Sigma_ptr->Re_B1 = 0.5*neq_coeff*1./(2.*p_tilde_cubic*p_tilde_cubic)
                   *((- 5.*p0_tilde_cubic + 6.*p_0_tilde*p_tilde_sq - p_tilde_cubic*p_i_tilde/p_0_tilde)*Re_Qx
                      + 5.*p0_tilde_cubic - 13./3.*p_0_tilde*p_tilde_sq);
-    Sigma_ptr->Re_C1 = omega_0_sq*neq_coeff*1./(2.*p_tilde_sq*p_tilde_sq)
+    Sigma_ptr->Re_C1 = 0.5*neq_coeff*1./(2.*p_tilde_sq*p_tilde_sq)
                   *((p0_tilde_sq - p_tilde_sq)*Re_Qx - p0_tilde_sq + 2./3.*p_tilde_sq);
     
     //imaginary part
@@ -763,13 +802,13 @@ void QGP_2to2_Scattering::get_quark_selfenergy_coefficients(double p_0_tilde, do
     }
     else
     {
-       Sigma_ptr->Im_A0 = omega_0_sq/p_tilde_sq*Im_Qx; 
-       Sigma_ptr->Im_B0 = omega_0_sq*(- p_0_tilde/p_tilde_sq + 1./p_0_tilde)*Im_Qx;
-       Sigma_ptr->Im_A1 = omega_0_sq*neq_coeff*1./(2.*p_tilde_cubic*p_tilde_cubic)
+       Sigma_ptr->Im_A0 = 0.5/p_tilde_sq*Im_Qx; 
+       Sigma_ptr->Im_B0 = 0.5*(- p_0_tilde/p_tilde_sq + 1./p_0_tilde)*Im_Qx;
+       Sigma_ptr->Im_A1 = 0.5*neq_coeff*1./(2.*p_tilde_cubic*p_tilde_cubic)
                           *(5.*p0_tilde_sq - 3.*p_tilde_sq)*Im_Qx;
-       Sigma_ptr->Im_B1 = omega_0_sq*neq_coeff*1./(2.*p_tilde_cubic*p_tilde_cubic)
+       Sigma_ptr->Im_B1 = 0.5*neq_coeff*1./(2.*p_tilde_cubic*p_tilde_cubic)
                           *(- 5.*p0_tilde_cubic + 6.*p_0_tilde*p_tilde_sq - p_tilde_cubic*p_i_tilde/p_0_tilde)*Im_Qx;
-       Sigma_ptr->Im_C1 = omega_0_sq*neq_coeff*1./(2.*p_tilde_sq*p_tilde_sq)
+       Sigma_ptr->Im_C1 = 0.5*neq_coeff*1./(2.*p_tilde_sq*p_tilde_sq)
                           *(p0_tilde_sq - p_tilde_sq)*Im_Qx;
     }
     return;
