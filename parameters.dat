@@ -1,3 +1,4 @@
+n_flavor = 3       # number of flavor for quarks
 deltaf_alpha = 2   # the exponent of the p dependence of the delta f correction deltaf_alpha = 2 for democratic choice
 
 n_p = 100

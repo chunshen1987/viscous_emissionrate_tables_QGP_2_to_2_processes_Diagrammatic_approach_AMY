@@ -18,6 +18,7 @@ using namespace std;
 QGP_2to2_Scattering::QGP_2to2_Scattering(ParameterReader* paraRdr_in)
 {
    paraRdr = paraRdr_in;
+   Phycons = new Physicalconstants (paraRdr_in);
    
    n_Eq = paraRdr->getVal("n_Eq");
    double Eq_i = paraRdr->getVal("Eq_min");
@@ -114,6 +115,7 @@ QGP_2to2_Scattering::QGP_2to2_Scattering(ParameterReader* paraRdr_in)
 
 QGP_2to2_Scattering::~QGP_2to2_Scattering()
 {
+   delete Phycons;
    delete[] Eq_tb;
    delete[] T_tb;
    for(int i=0; i<n_Eq; i++)
@@ -187,11 +189,11 @@ void QGP_2to2_Scattering::set_gausspoints()
 
 void QGP_2to2_Scattering::buildupEmissionrate2DTable()
 {
-   double hbarC = Phycons.get_hbarC();
-   double e_sq = Phycons.get_e_sq();
-   double q_sq = Phycons.get_q_sq();
-   double d_F = Phycons.get_d_F();
-   double C_F = Phycons.get_C_F();
+   double hbarC = Phycons->get_hbarC();
+   double e_sq = Phycons->get_e_sq();
+   double q_sq = Phycons->get_q_sq();
+   double d_F = Phycons->get_d_F();
+   double C_F = Phycons->get_C_F();
 
    double *ktildeT = new double [n_Eq];
    double *rawResult_eq = new double [n_Eq];
@@ -207,7 +209,7 @@ void QGP_2to2_Scattering::buildupEmissionrate2DTable()
    {
       double T = T_tb[j];
       
-      double g_s = Phycons.get_g_s_const();
+      double g_s = Phycons->get_g_s_const();
       double prefactor = e_sq*q_sq*d_F*C_F*g_s*g_s;
       for(int i = 0; i < n_Eq; i++)
          ktildeT[i] = Eq_tb[i]/T;
@@ -419,7 +421,7 @@ void QGP_2to2_Scattering::calculateEmissionrates_I2()
 
 void QGP_2to2_Scattering::scale_gausspoints_qtilde(double ktilde)
 {
-   double g_s = Phycons.get_g_s_const();
+   double g_s = Phycons->get_g_s_const();
    qtilde_cutoff = sqrt(g_s);
    double qtilde_min_1 = qtilde_cutoff;
    double qtilde_max_1 = qtilde_min_1 + ktilde;
@@ -600,7 +602,7 @@ void QGP_2to2_Scattering::Integrate_I2_pprime(double ktilde, double qtilde, doub
 
 void QGP_2to2_Scattering::calculateEmissionrates_soft(string filename_in)
 {
-   double hbarC = Phycons.get_hbarC();
+   double hbarC = Phycons->get_hbarC();
    filename = filename_in;
 
    double* results = new double [2];
@@ -612,9 +614,9 @@ void QGP_2to2_Scattering::calculateEmissionrates_soft(string filename_in)
    {
        double ktilde = ktilde_pt[i];
        double f_q = Fermi_distribution(ktilde);
-       double e_sq = Phycons.get_e_sq();
-       double q_sq = Phycons.get_q_sq();
-       double N_c = Phycons.get_N_c();
+       double e_sq = Phycons->get_e_sq();
+       double q_sq = Phycons->get_q_sq();
+       double N_c = Phycons->get_N_c();
        double prefactor = 1./(2.*(8.*M_PI*M_PI*M_PI))
                           *(- e_sq)*q_sq*N_c*8.*f_q/ktilde;
        double equilibrium_result_p = 0.0;
@@ -719,8 +721,8 @@ void QGP_2to2_Scattering::getIntegrand(double ktilde, double ptilde, double cost
 void QGP_2to2_Scattering::get_quark_selfenergy_coefficients(double p_0_tilde, double p_i_tilde, Selfenergy_coefficients* Sigma_ptr)
 {
     double eps = 1e-10;
-    double g_s = Phycons.get_g_s_const();
-    double C_F = Phycons.get_C_F();
+    double g_s = Phycons->get_g_s_const();
+    double C_F = Phycons->get_C_F();
 
     double omega_0_sq = g_s*g_s*C_F/8.0;
 

@@ -26,7 +26,7 @@ class QGP_2to2_Scattering
    private:
       ParameterReader *paraRdr;
 
-      Physicalconstants Phycons;
+      Physicalconstants *Phycons;
 
       int n_Eq, n_Temp;
       double *Eq_tb, *T_tb;
