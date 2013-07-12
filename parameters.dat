@@ -3,8 +3,8 @@ deltaf_alpha = 2   # the exponent of the p dependence of the delta f correction 
 n_p = 100
 n_theta = 100
 
-n_ktilde = 400
-ktilde_i = 0.05
+n_ktilde = 1
+ktilde_i = 10
 ktilde_max = 50
 
 n_qtilde_I1 = 100

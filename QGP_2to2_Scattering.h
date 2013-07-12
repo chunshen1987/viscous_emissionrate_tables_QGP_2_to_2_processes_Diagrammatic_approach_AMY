@@ -78,18 +78,18 @@ class QGP_2to2_Scattering
 
       void set_gausspoints();
      
-      void calculateEmissionrates_hard(string filename);
+      double calculateEmissionrates_hard(string filename, double ptcut);
       void calculateEmissionrates_I1();
       void scale_gausspoints_omega(double ktilde);
       void Integrate_I1_qtilde(double ktilde, double omega, double* results);
       void Integrate_I1_pprime(double ktilde, double omega, double qtilde, double* results);
 
-      void calculateEmissionrates_I2();
-      void scale_gausspoints_qtilde(double ktilde);
+      void calculateEmissionrates_I2(double ptcut);
+      void scale_gausspoints_qtilde(double ktilde, double ptcut);
       void Integrate_I2_omega(double ktilde, double qtilde, double* results);
       void Integrate_I2_pprime(double ktilde, double qtilde, double omega, double* results);
 
-      void calculateEmissionrates_soft(string filename);
+      double calculateEmissionrates_soft(string filename);
       void getIntegrand(double qtilde, double ptilde, double costhetap, double* results);
       void get_quark_selfenergy_coefficients(double p_0_tilde, double p_i_tilde, Selfenergy_coefficients* Sigma_ptr);
       double quark_selfenergy_Q(double x);

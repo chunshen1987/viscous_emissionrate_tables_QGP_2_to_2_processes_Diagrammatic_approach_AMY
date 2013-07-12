@@ -244,13 +244,15 @@ void QGP_2to2_Scattering::output_emissionrateTable()
    of_viscous.close();
 }
 
-void QGP_2to2_Scattering::calculateEmissionrates_hard(string filename_in)
+double QGP_2to2_Scattering::calculateEmissionrates_hard(string filename_in, double ptcut)
 {
    filename = filename_in;
    calculateEmissionrates_I1();
-   calculateEmissionrates_I2();
-   buildupEmissionrate2DTable();
-   output_emissionrateTable();
+   calculateEmissionrates_I2(ptcut);
+   return(equilibriumTilde_results[0]);
+   //return(viscousTilde_results[0]);
+   //buildupEmissionrate2DTable();
+   //output_emissionrateTable();
 
 }
 
@@ -376,7 +378,7 @@ void QGP_2to2_Scattering::Integrate_I1_pprime(double ktilde, double omega, doubl
    results[1] = viscous_result;
 }
 
-void QGP_2to2_Scattering::calculateEmissionrates_I2()
+void QGP_2to2_Scattering::calculateEmissionrates_I2(double ptcut)
 {
    double hbarC = Phycons.get_hbarC();
    double e_sq = Phycons.get_e_sq();
@@ -392,7 +394,7 @@ void QGP_2to2_Scattering::calculateEmissionrates_I2()
 
        double prefactor = 1./(pow(2.0*M_PI, 6)*ktilde)*e_sq*q_sq*d_F*C_F*g_s*g_s;
 
-       scale_gausspoints_qtilde(ktilde);
+       scale_gausspoints_qtilde(ktilde, ptcut);
 
        double equilibrium_result_qtilde = 0.0;
        double viscous_result_qtilde = 0.0;
@@ -420,10 +422,11 @@ void QGP_2to2_Scattering::calculateEmissionrates_I2()
 }
 
 
-void QGP_2to2_Scattering::scale_gausspoints_qtilde(double ktilde)
+void QGP_2to2_Scattering::scale_gausspoints_qtilde(double ktilde, double ptcut)
 {
    double g_s = Phycons.get_g_s_const();
-   qtilde_cutoff = sqrt(g_s);
+   //qtilde_cutoff = sqrt(g_s);
+   qtilde_cutoff = ptcut;
    double qtilde_min_1 = qtilde_cutoff;
    double qtilde_max_1 = qtilde_min_1 + ktilde;
    double qtilde_min_2 = qtilde_max_1;
@@ -601,7 +604,7 @@ void QGP_2to2_Scattering::Integrate_I2_pprime(double ktilde, double qtilde, doub
    results[1] = term_st_vis + term_ut_vis;
 }
 
-void QGP_2to2_Scattering::calculateEmissionrates_soft(string filename_in)
+double QGP_2to2_Scattering::calculateEmissionrates_soft(string filename_in)
 {
    double hbarC = Phycons.get_hbarC();
    filename = filename_in;
@@ -640,9 +643,9 @@ void QGP_2to2_Scattering::calculateEmissionrates_soft(string filename_in)
 
    }
    
-   buildupEmissionrate2DTable();
-   output_emissionrateTable();
    delete [] results;
+   return(equilibriumTilde_results[0]);
+   //return(viscousTilde_results[0]);
 }
 
 void QGP_2to2_Scattering::getIntegrand(double ktilde, double ptilde, double costhetap, double* results)
