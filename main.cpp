@@ -51,6 +51,8 @@ int main(int argc, char** argv)
       result_soft_vis = res[1];
       
       result_tot_eq = result_hard_eq + result_soft_eq;
+      result_tot_vis = result_hard_vis + result_soft_vis;
+
       cout << scientific << setprecision(10) << setw(15) 
            << ptcut << "   " << result_hard_eq << "   " 
            << result_soft_eq << "   " << result_tot_eq << "   "
