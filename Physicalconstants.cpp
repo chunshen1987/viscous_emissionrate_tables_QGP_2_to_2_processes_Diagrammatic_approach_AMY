@@ -17,7 +17,7 @@ Physicalconstants::Physicalconstants()
     d_F = 3.;   // dimension of flavor
     C_F = (N_c*N_c - 1)/(2.*N_c);
     alpha_EM = 1./137.;
-    g_s = 0.5;
+    g_s = 0.1;
 
 }
 

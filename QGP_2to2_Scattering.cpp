@@ -244,12 +244,14 @@ void QGP_2to2_Scattering::output_emissionrateTable()
    of_viscous.close();
 }
 
-double QGP_2to2_Scattering::calculateEmissionrates_hard(string filename_in, double ptcut)
+double QGP_2to2_Scattering::calculateEmissionrates_hard(string filename_in, double ptcut, double* results)
 {
    filename = filename_in;
    calculateEmissionrates_I1();
    calculateEmissionrates_I2(ptcut);
-   return(equilibriumTilde_results[0]);
+   results[0] = equilibriumTilde_results[0];
+   results[1] = viscousTilde_results[0];
+   return(0);
    //return(viscousTilde_results[0]);
    //buildupEmissionrate2DTable();
    //output_emissionrateTable();
@@ -604,7 +606,7 @@ void QGP_2to2_Scattering::Integrate_I2_pprime(double ktilde, double qtilde, doub
    results[1] = term_st_vis + term_ut_vis;
 }
 
-double QGP_2to2_Scattering::calculateEmissionrates_soft(string filename_in)
+double QGP_2to2_Scattering::calculateEmissionrates_soft(string filename_in, double* res)
 {
    double hbarC = Phycons.get_hbarC();
    filename = filename_in;
@@ -644,8 +646,9 @@ double QGP_2to2_Scattering::calculateEmissionrates_soft(string filename_in)
    }
    
    delete [] results;
-   return(equilibriumTilde_results[0]);
-   //return(viscousTilde_results[0]);
+   res[0] = equilibriumTilde_results[0];
+   res[1] = viscousTilde_results[0];
+   return(0.0);
 }
 
 void QGP_2to2_Scattering::getIntegrand(double ktilde, double ptilde, double costhetap, double* results)

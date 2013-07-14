@@ -32,24 +32,33 @@ int main(int argc, char** argv)
    int npTcut = 30;
    double dptcut = (log(ptcut_f) - log(ptcut_i))/(npTcut - 1);
 
+   double *res = new double [2];
    for(int i = 0 ; i < npTcut; i++)
    {
       double ptcut = ptcut_i*exp(i*dptcut);
-      double result_tot, result_hard, result_soft;
+      double result_tot_eq, result_hard_eq, result_soft_eq;
+      double result_tot_vis, result_hard_vis, result_soft_vis;
       //Compton Scattering
       filename = "QGP_2to2_hard";
-      result_hard = test.calculateEmissionrates_hard(filename, ptcut);
+      test.calculateEmissionrates_hard(filename, ptcut, res);
+      result_hard_eq = res[0];
+      result_hard_vis = res[1];
    
       //Calculate photon polarization tensor for soft momentum contribution
       filename = "QGP_2to2_soft";
-      result_soft = test.calculateEmissionrates_soft(filename);
+      test.calculateEmissionrates_soft(filename, res);
+      result_soft_eq = res[0];
+      result_soft_vis = res[1];
       
-      result_tot = result_hard + result_soft;
+      result_tot_eq = result_hard_eq + result_soft_eq;
       cout << scientific << setprecision(10) << setw(15) 
-           << ptcut << "   " << result_hard << "   " 
-           << result_soft << "   " << result_tot 
+           << ptcut << "   " << result_hard_eq << "   " 
+           << result_soft_eq << "   " << result_tot_eq << "   "
+           << result_hard_vis << "   " << result_soft_vis 
+           << "   " << result_tot_vis 
            << endl;
    }
+   delete [] res;
 
    sw.toc();
    //cout << "totally takes : " << sw.takeTime() << "sec." << endl;
