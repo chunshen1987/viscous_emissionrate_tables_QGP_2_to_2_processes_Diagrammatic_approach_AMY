@@ -862,8 +862,20 @@ double QGP_2to2_Scattering::Impart_ComplexDivide(double Re1, double Im1, double 
 
 inline double Power(double x, int a)
 {
+    if(a == 1) return(x);
+    if(a == 0) return(1.0);
     double result = 1.0;
-    for(int i=0; i<a; i++)
-       result *= x;
-    return(result);
+    double temp;
+    if((a % 2) == 0)
+    {
+       temp = Power(x, a/2);
+       result = temp*temp;
+       return(result);
+    }
+    else
+    {
+       temp = Power(x, (a-1)/2);
+       result = temp*temp*x;
+       return(result);
+    }
 }
