@@ -865,17 +865,14 @@ inline double Power(double x, int a)
     if(a == 1) return(x);
     if(a == 0) return(1.0);
     double result = 1.0;
-    double temp;
     if((a % 2) == 0)
     {
-       temp = Power(x, a/2);
-       result = temp*temp;
-       return(result);
+       result = Power(x, a/2);
+       return(result*result);
     }
     else
     {
-       temp = Power(x, (a-1)/2);
-       result = temp*temp*x;
-       return(result);
+       result = Power(x, (a-1)/2);
+       return(result*result*x);
     }
 }
