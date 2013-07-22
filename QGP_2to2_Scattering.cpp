@@ -190,9 +190,9 @@ void QGP_2to2_Scattering::set_gausspoints()
 void QGP_2to2_Scattering::buildupEmissionrate2DTable_hard()
 {
    double hbarC = Phycons->get_hbarC();
-   double e_sq = Phycons->get_e_sq();
+   double alphaEM = Phycons->get_alphaEM();
    double q_sq = Phycons->get_q_sq();
-   double d_F = Phycons->get_d_F();
+   double N_c = Phycons->get_N_c();
    double C_F = Phycons->get_C_F();
 
    double *ktildeT = new double [n_Eq];
@@ -210,7 +210,8 @@ void QGP_2to2_Scattering::buildupEmissionrate2DTable_hard()
       double T = T_tb[j];
       
       double g_s = Phycons->get_g_s_const();
-      double prefactor = e_sq*q_sq*d_F*C_F*g_s*g_s;
+      double m_inf_sq = C_F*g_s*g_s/4.;
+      double prefactor = alphaEM*q_sq*N_c*m_inf_sq;
       for(int i = 0; i < n_Eq; i++)
          ktildeT[i] = Eq_tb[i]/T;
       interpolation1D_linear(ktilde_pt, log_eq, ktildeT, rawResult_eq, n_ktilde, n_Eq);
@@ -234,7 +235,7 @@ void QGP_2to2_Scattering::buildupEmissionrate2DTable_hard()
 void QGP_2to2_Scattering::buildupEmissionrate2DTable_soft()
 {
    double hbarC = Phycons->get_hbarC();
-   double e_sq = Phycons->get_e_sq();
+   double alphaEM = Phycons->get_alphaEM();
    double q_sq = Phycons->get_q_sq();
    double N_c = Phycons->get_N_c();
    double C_F = Phycons->get_C_F();
@@ -255,7 +256,7 @@ void QGP_2to2_Scattering::buildupEmissionrate2DTable_soft()
       
       double g_s = Phycons->get_g_s_const();
       double m_inf_sq = C_F*g_s*g_s/4.;
-      double prefactor = 1./(2.*(8.*M_PI*M_PI*M_PI))*e_sq*q_sq*N_c*m_inf_sq;
+      double prefactor = alphaEM*q_sq*N_c*m_inf_sq;
       for(int i = 0; i < n_Eq; i++)
          ktildeT[i] = Eq_tb[i]/T;
       interpolation1D_linear(ktilde_pt, log_eq, ktildeT, rawResult_eq, n_ktilde, n_Eq);
@@ -318,7 +319,7 @@ void QGP_2to2_Scattering::calculateEmissionrates_I1()
    {
        double ktilde = ktilde_pt[i];
 
-       double prefactor = 1./(16.*pow(2.0*M_PI, 6)*ktilde);
+       double prefactor = 1./(16.*pow(2.0*M_PI, 6)*ktilde)*16.*M_PI;
 
        scale_gausspoints_omega(ktilde);
 
@@ -433,7 +434,7 @@ void QGP_2to2_Scattering::calculateEmissionrates_I2()
    {
        double ktilde = ktilde_pt[i];
 
-       double prefactor = 1./(16.*pow(2.0*M_PI, 6)*ktilde);
+       double prefactor = 1./(16.*pow(2.0*M_PI, 6)*ktilde)*16.*M_PI;
 
        scale_gausspoints_qtilde(ktilde);
 
@@ -659,7 +660,7 @@ void QGP_2to2_Scattering::calculateEmissionrates_soft(string filename_in)
    {
        double ktilde = ktilde_pt[i];
        double f_q = Fermi_distribution(ktilde);
-       double prefactor = (-1.)*8.*f_q/ktilde;
+       double prefactor = (-1.)/(4.*M_PI*M_PI)*8.*f_q/ktilde;
 
        double equilibrium_result_p = 0.0;
        double viscous_result_p = 0.0;
