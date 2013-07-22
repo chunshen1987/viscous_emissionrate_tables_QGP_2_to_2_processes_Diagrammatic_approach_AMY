@@ -236,7 +236,7 @@ void QGP_2to2_Scattering::buildupEmissionrate2DTable_soft()
    double hbarC = Phycons->get_hbarC();
    double e_sq = Phycons->get_e_sq();
    double q_sq = Phycons->get_q_sq();
-   double d_F = Phycons->get_d_F();
+   double N_c = Phycons->get_N_c();
    double C_F = Phycons->get_C_F();
 
    double *ktildeT = new double [n_Eq];
@@ -254,7 +254,8 @@ void QGP_2to2_Scattering::buildupEmissionrate2DTable_soft()
       double T = T_tb[j];
       
       double g_s = Phycons->get_g_s_const();
-      double prefactor = e_sq*q_sq*d_F*C_F*g_s*g_s;
+      double m_inf_sq = C_F*g_s*g_s/4.;
+      double prefactor = 1./(2.*(8.*M_PI*M_PI*M_PI))*e_sq*q_sq*N_c*m_inf_sq;
       for(int i = 0; i < n_Eq; i++)
          ktildeT[i] = Eq_tb[i]/T;
       interpolation1D_linear(ktilde_pt, log_eq, ktildeT, rawResult_eq, n_ktilde, n_Eq);
@@ -262,7 +263,7 @@ void QGP_2to2_Scattering::buildupEmissionrate2DTable_soft()
       for(int i = 0; i < n_Eq; i++)
       {
          double temp = exp(rawResult_eq[i]);
-         equilibrium_results[i][j] = T*T*temp*prefactor/pow(hbarC, 4);   // convert units to 1/(GeV^2 fm^4) for the emission rates
+         equilibrium_results[i][j] = temp*prefactor*T*T/pow(hbarC, 4);   // convert units to 1/(GeV^2 fm^4) for the emission rates
 
          viscous_results[i][j] = rawResult_vis[i]*temp*prefactor/pow(hbarC, 4);   // convert units to 1/(GeV^2 fm^4) for the emission rates
 
@@ -645,23 +646,21 @@ void QGP_2to2_Scattering::Integrate_I2_pprime(double ktilde, double qtilde, doub
 
 void QGP_2to2_Scattering::calculateEmissionrates_soft(string filename_in)
 {
-   double hbarC = Phycons->get_hbarC();
+   double g_s = Phycons->get_g_s_const();
+   double m_inf = g_s/sqrt(3.);
    filename = filename_in;
 
    double* results = new double [2];
    double p_min = 0.0;
-   double p_max = qtilde_cutoff;
+   double p_max = qtilde_cutoff/(m_inf);
    gauss_quadrature(n_pSoft, 1, 0.0, 0.0, p_min, p_max, pSoft, pSoft_weight);
 
    for(int i=0; i<n_ktilde; i++)
    {
        double ktilde = ktilde_pt[i];
        double f_q = Fermi_distribution(ktilde);
-       double e_sq = Phycons->get_e_sq();
-       double q_sq = Phycons->get_q_sq();
-       double N_c = Phycons->get_N_c();
-       double prefactor = 1./(2.*(8.*M_PI*M_PI*M_PI))
-                          *(- e_sq)*q_sq*N_c*8.*f_q/ktilde;
+       double prefactor = (-1.)*8.*f_q/ktilde;
+
        double equilibrium_result_p = 0.0;
        double viscous_result_p = 0.0;
        for(int k=0; k<n_pSoft; k++)
@@ -677,8 +676,8 @@ void QGP_2to2_Scattering::calculateEmissionrates_soft(string filename_in)
           equilibrium_result_p += equilibrium_result_theta*pSoft_weight[k];
           viscous_result_p += viscous_result_theta*pSoft_weight[k];
        }
-       equilibriumTilde_results[i] = equilibrium_result_p*prefactor/pow(hbarC, 4); // convert units to 1/(GeV^2 fm^4) for the emission rates
-       viscousTilde_results[i] = ((1. - f_q)*deltaf_chi(ktilde)*equilibrium_result_p + viscous_result_p)*prefactor/(ktilde*ktilde)/pow(hbarC, 4); // convert units to 1/(GeV^2 fm^4) for the emission rates
+       equilibriumTilde_results[i] = equilibrium_result_p*prefactor;
+       viscousTilde_results[i] = ((1. - f_q)*deltaf_chi(ktilde)*equilibrium_result_p + viscous_result_p)*prefactor/(ktilde*ktilde);
 
    }
    
@@ -773,7 +772,7 @@ void QGP_2to2_Scattering::get_quark_selfenergy_coefficients(double p_0_tilde, do
     double Im_Qx = - 0.5*(p_0_tilde/p_i_tilde)*M_PI;
     
     //Equilibrium quark self energy from Hard Thermal Loop Approximation
-    Sigma_ptr->Re_A0 = 0.5*p_tilde_sq*(Re_Qx - 1.); 
+    Sigma_ptr->Re_A0 = 0.5/p_tilde_sq*(Re_Qx - 1.); 
     Sigma_ptr->Re_B0 = 0.5*((- p_0_tilde/p_tilde_sq + 1./p_0_tilde)*Re_Qx + p_0_tilde/p_tilde_sq);
 
     double neq_coeff;
