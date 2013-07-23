@@ -26,7 +26,7 @@ class QGP_2to2_Scattering
    private:
       ParameterReader *paraRdr;
 
-      Physicalconstants Phycons;
+      Physicalconstants *Phycons;
 
       int n_Eq, n_Temp;
       double *Eq_tb, *T_tb;
@@ -73,7 +73,8 @@ class QGP_2to2_Scattering
       QGP_2to2_Scattering(ParameterReader* paraRdr_in);
       ~QGP_2to2_Scattering();
 
-      void buildupEmissionrate2DTable();
+      void buildupEmissionrate2DTable_hard();
+      void buildupEmissionrate2DTable_soft();
       void output_emissionrateTable();
 
       void set_gausspoints();

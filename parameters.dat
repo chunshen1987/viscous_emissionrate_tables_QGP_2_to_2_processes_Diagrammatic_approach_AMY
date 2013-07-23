@@ -1,9 +1,10 @@
+n_flavor = 3       # number of flavor for quarks
 deltaf_alpha = 2   # the exponent of the p dependence of the delta f correction deltaf_alpha = 2 for democratic choice
 
 n_p = 100
 n_theta = 100
 
-n_ktilde = 400
+n_ktilde = 100
 ktilde_i = 0.05
 ktilde_max = 50
 
