@@ -26,14 +26,15 @@ int main(int argc, char** argv)
    paraRdr->readFromArguments(argc, argv);
 
    QGP_2to2_Scattering test(paraRdr);
+   test.calculateEmissionrates_AMY();
 
-   //Compton Scattering
-   filename = "QGP_2to2_hard";
-   test.calculateEmissionrates_hard(filename);
-   
-   //Calculate photon polarization tensor for soft momentum contribution
-   filename = "QGP_2to2_soft";
-   test.calculateEmissionrates_soft(filename);
+   ////Compton Scattering
+   //filename = "QGP_2to2_hard";
+   //test.calculateEmissionrates_hard(filename);
+   //
+   ////Calculate photon polarization tensor for soft momentum contribution
+   //filename = "QGP_2to2_soft";
+   //test.calculateEmissionrates_soft(filename);
 
    sw.toc();
    cout << "totally takes : " << sw.takeTime() << "sec." << endl;

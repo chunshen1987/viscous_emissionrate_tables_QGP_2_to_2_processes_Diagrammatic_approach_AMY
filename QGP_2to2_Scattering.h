@@ -73,20 +73,24 @@ class QGP_2to2_Scattering
       QGP_2to2_Scattering(ParameterReader* paraRdr_in);
       ~QGP_2to2_Scattering();
 
+      void buildupEmissionrate2DTable();
+      void calculateEmissionrates_AMY();
+      void calculateEmissionRates_softAMY(double cutoff, double* Eqrate, double* Softrate);
+      void extrapolateRates(double qcut1, double* eqRes1, double* visRes1, double qcut2, double* eqRes2, double* visRes2, double* eqRes, double* visRes);
       void buildupEmissionrate2DTable_hard();
       void buildupEmissionrate2DTable_soft();
       void output_emissionrateTable();
 
       void set_gausspoints();
      
-      void calculateEmissionrates_hard(string filename);
-      void calculateEmissionrates_I1();
+      void calculateEmissionrates_hard(string filename, double ptcut);
+      void calculateEmissionrates_I1(double* eqRate, double* visRate);
       void scale_gausspoints_omega(double ktilde);
       void Integrate_I1_qtilde(double ktilde, double omega, double* results);
       void Integrate_I1_pprime(double ktilde, double omega, double qtilde, double* results);
 
-      void calculateEmissionrates_I2();
-      void scale_gausspoints_qtilde(double ktilde);
+      void calculateEmissionrates_I2(double ptcut, double* eqRate, double* visRate);
+      void scale_gausspoints_qtilde(double ktilde, double q_cut);
       void Integrate_I2_omega(double ktilde, double qtilde, double* results);
       void Integrate_I2_pprime(double ktilde, double qtilde, double omega, double* results);
 
