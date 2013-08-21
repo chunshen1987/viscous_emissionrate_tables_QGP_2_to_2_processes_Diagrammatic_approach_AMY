@@ -98,9 +98,12 @@ QGP_2to2_Scattering::QGP_2to2_Scattering(ParameterReader* paraRdr_in)
    pprime_I2_2_pt_standard = new double [n_pprime_I2_2];
    pprime_I2_2_weight_standard = new double [n_pprime_I2_2];
 
-   n_pSoft = paraRdr->getVal("n_p");
-   pSoft = new double [n_pSoft];
-   pSoft_weight = new double [n_pSoft];
+   n_pSoft1 = paraRdr->getVal("n_p1");
+   pSoft1 = new double [n_pSoft1];
+   pSoft1_weight = new double [n_pSoft1];
+   n_pSoft2 = paraRdr->getVal("n_p2");
+   pSoft2 = new double [n_pSoft2];
+   pSoft2_weight = new double [n_pSoft2];
 
    n_theta = paraRdr->getVal("n_theta");
    costhetaSoft = new double [n_theta];
@@ -163,8 +166,10 @@ QGP_2to2_Scattering::~QGP_2to2_Scattering()
    delete[] pprime_I2_2_pt_standard;
    delete[] pprime_I2_2_weight_standard;
 
-   delete [] pSoft;
-   delete [] pSoft_weight;
+   delete [] pSoft1;
+   delete [] pSoft1_weight;
+   delete [] pSoft2;
+   delete [] pSoft2_weight;
    delete [] costhetaSoft;
    delete [] costhetaSoft_weight;
 }
@@ -609,12 +614,27 @@ void QGP_2to2_Scattering::Integrate_I2_pprime(double ktilde, double qtilde, doub
 double QGP_2to2_Scattering::calculateEmissionrates_soft(string filename_in, double* res)
 {
    double hbarC = Phycons.get_hbarC();
+   double g_s = Phycons.get_g_s_const();
    filename = filename_in;
 
    double* results = new double [2];
-   double p_min = 0.0;
-   double p_max = qtilde_cutoff;
-   gauss_quadrature(n_pSoft, 1, 0.0, 0.0, p_min, p_max, pSoft, pSoft_weight);
+   double p_min1, p_min2, p_max1, p_max2;
+   double p_split = 5.*g_s;
+   p_min1 = 0.0;
+   if((qtilde_cutoff - p_split) > 1e-5)
+   {
+      p_max1 = 5*g_s;
+      p_min2 = p_max1;
+      p_max2 = qtilde_cutoff;
+   }
+   else
+   {
+      p_max1 = qtilde_cutoff*2./3.;
+      p_min2 = p_max1;
+      p_max2 = qtilde_cutoff;
+   }
+   gauss_quadrature(n_pSoft1, 1, 0.0, 0.0, p_min1, p_max1, pSoft1, pSoft1_weight);
+   gauss_quadrature(n_pSoft2, 1, 0.0, 0.0, p_min2, p_max2, pSoft2, pSoft2_weight);
 
    for(int i=0; i<n_ktilde; i++)
    {
@@ -627,18 +647,35 @@ double QGP_2to2_Scattering::calculateEmissionrates_soft(string filename_in, doub
                           *(- e_sq)*q_sq*N_c*8.*f_q/ktilde;
        double equilibrium_result_p = 0.0;
        double viscous_result_p = 0.0;
-       for(int k=0; k<n_pSoft; k++)
+       //body part
+       for(int k=0; k<n_pSoft1; k++)
        {
           double equilibrium_result_theta = 0.0;
           double viscous_result_theta = 0.0;
           for(int l=0; l<n_theta; l++)
           {
-             getIntegrand(ktilde, pSoft[k], costhetaSoft[l], results);
+             getIntegrand(ktilde, pSoft1[k], costhetaSoft[l], results);
              equilibrium_result_theta += results[0]*costhetaSoft_weight[l];
              viscous_result_theta += results[1]*costhetaSoft_weight[l];
           }
-          equilibrium_result_p += equilibrium_result_theta*pSoft_weight[k];
-          viscous_result_p += viscous_result_theta*pSoft_weight[k];
+          //cout << pSoft1[k] << "   " << viscous_result_theta << endl;
+          equilibrium_result_p += equilibrium_result_theta*pSoft1_weight[k];
+          viscous_result_p += viscous_result_theta*pSoft1_weight[k];
+       }
+       //tail part
+       for(int k=0; k<n_pSoft2; k++)
+       {
+          double equilibrium_result_theta = 0.0;
+          double viscous_result_theta = 0.0;
+          for(int l=0; l<n_theta; l++)
+          {
+             getIntegrand(ktilde, pSoft2[k], costhetaSoft[l], results);
+             equilibrium_result_theta += results[0]*costhetaSoft_weight[l];
+             viscous_result_theta += results[1]*costhetaSoft_weight[l];
+          }
+          //cout << pSoft2[k] << "   " << viscous_result_theta << endl;
+          equilibrium_result_p += equilibrium_result_theta*pSoft2_weight[k];
+          viscous_result_p += viscous_result_theta*pSoft2_weight[k];
        }
        equilibriumTilde_results[i] = equilibrium_result_p*prefactor/pow(hbarC, 4); // convert units to 1/(GeV^2 fm^4) for the emission rates
        viscousTilde_results[i] = ((1. - f_q)*deltaf_chi(ktilde)*equilibrium_result_p + viscous_result_p)*prefactor/(ktilde*ktilde)/pow(hbarC, 4); // convert units to 1/(GeV^2 fm^4) for the emission rates

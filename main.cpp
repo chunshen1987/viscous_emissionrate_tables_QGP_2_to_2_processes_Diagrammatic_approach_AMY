@@ -27,10 +27,10 @@ int main(int argc, char** argv)
 
    QGP_2to2_Scattering test(paraRdr);
 
-   double ptcut_i = 0.005;
-   double ptcut_f = 100;
-   int npTcut = 30;
-   double dptcut = (log(ptcut_f) - log(ptcut_i))/(npTcut - 1);
+   double ptcut_i = 0.001;
+   double ptcut_f = 10;
+   int npTcut = 150;
+   double dptcut = (log(ptcut_f) - log(ptcut_i))/(npTcut - 1 + 1e-10);
 
    double *res = new double [2];
    for(int i = 0 ; i < npTcut; i++)
