@@ -36,10 +36,12 @@ QGP_2to2_Scattering::QGP_2to2_Scattering(ParameterReader* paraRdr_in)
 
    equilibrium_results = new double* [n_Eq];
    viscous_results = new double*[n_Eq];
+   bulkvis_results = new double*[n_Eq];
    for(int i=0; i<n_Eq; i++)
    {
       equilibrium_results[i] = new double [n_Temp];
       viscous_results[i] = new double [n_Temp];
+      bulkvis_results[i] = new double [n_Temp];
    }
 
    n_ktilde = paraRdr->getVal("n_ktilde");
@@ -51,6 +53,7 @@ QGP_2to2_Scattering::QGP_2to2_Scattering(ParameterReader* paraRdr_in)
       ktilde_pt[i] = ktilde_i + i*dktilde;
    equilibriumTilde_results = new double [n_ktilde];
    viscousTilde_results = new double [n_ktilde];
+   bulkvisTilde_results = new double [n_ktilde];
    
    //initialize the Gaussian quadrature lattices
    n_qtilde_I1 = paraRdr->getVal("n_qtilde_I1");
@@ -122,11 +125,14 @@ QGP_2to2_Scattering::~QGP_2to2_Scattering()
    {
       delete[] equilibrium_results[i];
       delete[] viscous_results[i];
+      delete[] bulkvis_results[i];
    }
    delete[] equilibrium_results;
    delete[] viscous_results;
+   delete[] bulkvis_results;
    delete[] equilibriumTilde_results;
    delete[] viscousTilde_results;
+   delete[] bulkvisTilde_results;
 
    delete[] ktilde_pt;
 
@@ -198,12 +204,15 @@ void QGP_2to2_Scattering::buildupEmissionrate2DTable_hard()
    double *ktildeT = new double [n_Eq];
    double *rawResult_eq = new double [n_Eq];
    double *rawResult_vis = new double [n_Eq];
+   double *rawResult_bulkvis = new double [n_Eq];
    double *log_eq = new double [n_ktilde];
    double *scaled_vis = new double [n_ktilde];
+   double *scaled_bulkvis = new double [n_ktilde];
    for(int i = 0; i < n_ktilde; i++)
    {
       log_eq[i] = log(equilibriumTilde_results[i]);
       scaled_vis[i] = viscousTilde_results[i]/equilibriumTilde_results[i];
+      scaled_bulkvis[i] = bulkvisTilde_results[i]/equilibriumTilde_results[i];
    }
    for(int j = 0; j < n_Temp; j++)
    {
@@ -216,20 +225,23 @@ void QGP_2to2_Scattering::buildupEmissionrate2DTable_hard()
          ktildeT[i] = Eq_tb[i]/T;
       interpolation1D_linear(ktilde_pt, log_eq, ktildeT, rawResult_eq, n_ktilde, n_Eq);
       interpolation1D_linear(ktilde_pt, scaled_vis, ktildeT, rawResult_vis, n_ktilde, n_Eq);
+      interpolation1D_linear(ktilde_pt, scaled_bulkvis, ktildeT, rawResult_bulkvis, n_ktilde, n_Eq);
       for(int i = 0; i < n_Eq; i++)
       {
          double temp = exp(rawResult_eq[i]);
          equilibrium_results[i][j] = T*T*temp*prefactor/pow(hbarC, 4);   // convert units to 1/(GeV^2 fm^4) for the emission rates
 
          viscous_results[i][j] = rawResult_vis[i]*temp*prefactor/pow(hbarC, 4);   // convert units to 1/(GeV^2 fm^4) for the emission rates
-
+         bulkvis_results[i][j] = rawResult_bulkvis[i]*temp*prefactor/pow(hbarC, 4);   // convert units to 1/(GeV^2 fm^4) for the emission rates
       }
    }
    delete [] ktildeT;
    delete [] rawResult_eq;
    delete [] rawResult_vis;
+   delete [] rawResult_bulkvis;
    delete [] log_eq;
    delete [] scaled_vis;
+   delete [] scaled_bulkvis;
 }
 
 void QGP_2to2_Scattering::buildupEmissionrate2DTable_soft()
@@ -243,12 +255,15 @@ void QGP_2to2_Scattering::buildupEmissionrate2DTable_soft()
    double *ktildeT = new double [n_Eq];
    double *rawResult_eq = new double [n_Eq];
    double *rawResult_vis = new double [n_Eq];
+   double *rawResult_bulkvis = new double [n_Eq];
    double *log_eq = new double [n_ktilde];
    double *scaled_vis = new double [n_ktilde];
+   double *scaled_bulkvis = new double [n_ktilde];
    for(int i = 0; i < n_ktilde; i++)
    {
       log_eq[i] = log(equilibriumTilde_results[i]);
       scaled_vis[i] = viscousTilde_results[i]/equilibriumTilde_results[i];
+      scaled_bulkvis[i] = bulkvisTilde_results[i]/equilibriumTilde_results[i];
    }
    for(int j = 0; j < n_Temp; j++)
    {
@@ -261,20 +276,24 @@ void QGP_2to2_Scattering::buildupEmissionrate2DTable_soft()
          ktildeT[i] = Eq_tb[i]/T;
       interpolation1D_linear(ktilde_pt, log_eq, ktildeT, rawResult_eq, n_ktilde, n_Eq);
       interpolation1D_linear(ktilde_pt, scaled_vis, ktildeT, rawResult_vis, n_ktilde, n_Eq);
+      interpolation1D_linear(ktilde_pt, scaled_bulkvis, ktildeT, rawResult_bulkvis, n_ktilde, n_Eq);
       for(int i = 0; i < n_Eq; i++)
       {
          double temp = exp(rawResult_eq[i]);
          equilibrium_results[i][j] = temp*prefactor*T*T/pow(hbarC, 4);   // convert units to 1/(GeV^2 fm^4) for the emission rates
 
          viscous_results[i][j] = rawResult_vis[i]*temp*prefactor/pow(hbarC, 4);   // convert units to 1/(GeV^2 fm^4) for the emission rates
+         bulkvis_results[i][j] = rawResult_bulkvis[i]*temp*prefactor/pow(hbarC, 4);   // convert units to 1/(GeV^2 fm^4) for the emission rates
 
       }
    }
    delete [] ktildeT;
    delete [] rawResult_eq;
    delete [] rawResult_vis;
+   delete [] rawResult_bulkvis;
    delete [] log_eq;
    delete [] scaled_vis;
+   delete [] scaled_bulkvis;
 }
 
 void QGP_2to2_Scattering::output_emissionrateTable()
@@ -282,10 +301,13 @@ void QGP_2to2_Scattering::output_emissionrateTable()
    // output emission rate tables
    ostringstream output_file_eqrate;
    ostringstream output_file_viscous;
+   ostringstream output_file_bulkvis;
    output_file_eqrate << "rate_" << filename << "_eqrate.dat";
    output_file_viscous << "rate_" << filename << "_viscous.dat";
+   output_file_bulkvis << "rate_" << filename << "_bulkvis.dat";
    ofstream of_eqrate(output_file_eqrate.str().c_str());
    ofstream of_viscous(output_file_viscous.str().c_str());
+   ofstream of_bulkvis(output_file_bulkvis.str().c_str());
    for(int j=0; j<n_Temp; j++)
    {
       for(int i=0; i<n_Eq; i++)
@@ -293,14 +315,18 @@ void QGP_2to2_Scattering::output_emissionrateTable()
          of_eqrate << scientific << setw(20) << setprecision(8)
                    << equilibrium_results[i][j] << "   ";
          of_viscous << scientific << setw(20) << setprecision(8)
-                   << viscous_results[i][j] << "   ";
+                    << viscous_results[i][j] << "   ";
+         of_bulkvis << scientific << setw(20) << setprecision(8)
+                    << bulkvis_results[i][j] << "   ";
       }
       of_eqrate << endl;
       of_viscous << endl;
+      of_bulkvis << endl;
    }
 
    of_eqrate.close();
    of_viscous.close();
+   of_bulkvis.close();
 }
 
 void QGP_2to2_Scattering::calculateEmissionrates_hard(string filename_in)
@@ -314,7 +340,7 @@ void QGP_2to2_Scattering::calculateEmissionrates_hard(string filename_in)
 
 void QGP_2to2_Scattering::calculateEmissionrates_I1()
 {
-   double *results = new double [2];
+   double *results = new double [3];
    for(int i=0; i<n_ktilde; i++)
    {
        double ktilde = ktilde_pt[i];
@@ -325,6 +351,7 @@ void QGP_2to2_Scattering::calculateEmissionrates_I1()
 
        double equilibrium_result_omega = 0.0;
        double viscous_result_omega = 0.0;
+       double bulkvis_result_omega = 0.0;
 
        for(int k=0; k<n_omega_I1; k++)
        {
@@ -332,10 +359,11 @@ void QGP_2to2_Scattering::calculateEmissionrates_I1()
 
           equilibrium_result_omega += results[0]*omega_I1_weight[k];
           viscous_result_omega += results[1]*omega_I1_weight[k];
+          bulkvis_result_omega += results[2]*omega_I1_weight[k];
        }
        equilibriumTilde_results[i] = equilibrium_result_omega*prefactor;
        viscousTilde_results[i] = viscous_result_omega*prefactor/(ktilde*ktilde);
-       
+       bulkvisTilde_results[i] = bulkvis_result_omega*prefactor;
    }
    
    delete [] results;
@@ -359,6 +387,7 @@ void QGP_2to2_Scattering::Integrate_I1_qtilde(double ktilde, double omega, doubl
 {
    double equilibrium_result = 0.0e0;
    double viscous_result = 0.0e0;
+   double bulkvis_result = 0.0e0;
 
    double qtilde_min = fabs(2.*ktilde - omega);
    double qtilde_max = omega;
@@ -373,16 +402,19 @@ void QGP_2to2_Scattering::Integrate_I1_qtilde(double ktilde, double omega, doubl
       Integrate_I1_pprime(ktilde, omega, qtilde_I1_pt[i], results);
       equilibrium_result += results[0]*qtilde_I1_weight[i];
       viscous_result += results[1]*qtilde_I1_weight[i];
+      bulkvis_result += results[2]*qtilde_I1_weight[i];
    }
 
    results[0] = equilibrium_result;
    results[1] = viscous_result;
+   results[2] = bulkvis_result;
 }
 
 void QGP_2to2_Scattering::Integrate_I1_pprime(double ktilde, double omega, double qtilde, double* results)
 {
    double equilibrium_result = 0.0e0;
    double viscous_result = 0.0e0;
+   double bulkvis_result = 0.0e0;
 
    double pprime_I1_min = (omega - qtilde)/2.;
    pprime_max_I1 = (omega + qtilde)/2.;
@@ -419,17 +451,22 @@ void QGP_2to2_Scattering::Integrate_I1_pprime(double ktilde, double omega, doubl
                              *( (1. - f0_E2)*deltaf_chi(pprime)*(- 1.5*sin_theta_kq*cos_theta_kq*sin_theta_pprimeq*cos_theta_pprimeq)
                                +(1. + f0_E1)*deltaf_chi(omega - pprime)*(1.5*Power(1./(omega - pprime), 2)*(pprime*sin_theta_kq*sin_theta_pprimeq*(qtilde - pprime*cos_theta_pprimeq)*cos_theta_kq))
                               );
+      double bulkvis_integrand = eq_integrand*((1 + f0_E1)*bulk_deltaf_gluon(omega - pprime) 
+                                               +(1 - f0_E2)*bulk_deltaf_quark(pprime)
+                                               - f0_E3*bulk_deltaf_quark(omega - ktilde));
       equilibrium_result += eq_integrand*pprime_I1_weight[i];
       viscous_result += vis_integrand*pprime_I1_weight[i];
+      bulkvis_result += bulkvis_integrand*pprime_I1_weight[i];
    }
 
    results[0] = 16.*equilibrium_result;
    results[1] = 16.*viscous_result;
+   results[2] = 16.*bulkvis_result;
 }
 
 void QGP_2to2_Scattering::calculateEmissionrates_I2()
 {
-   double *results = new double [2];
+   double *results = new double [3];
    for(int i=0; i<n_ktilde; i++)
    {
        double ktilde = ktilde_pt[i];
@@ -440,6 +477,7 @@ void QGP_2to2_Scattering::calculateEmissionrates_I2()
 
        double equilibrium_result_qtilde = 0.0;
        double viscous_result_qtilde = 0.0;
+       double bulkvis_result_qtilde = 0.0;
 
        for(int k=0; k<n_qtilde_I2_1; k++)
        {
@@ -447,6 +485,7 @@ void QGP_2to2_Scattering::calculateEmissionrates_I2()
 
           equilibrium_result_qtilde += results[0]*qtilde_I2_1_weight[k];
           viscous_result_qtilde += results[1]*qtilde_I2_1_weight[k];
+          bulkvis_result_qtilde += results[2]*qtilde_I2_1_weight[k];
        }
        for(int k=0; k<n_qtilde_I2_2; k++)
        {
@@ -454,10 +493,11 @@ void QGP_2to2_Scattering::calculateEmissionrates_I2()
 
           equilibrium_result_qtilde += results[0]*qtilde_I2_2_weight[k];
           viscous_result_qtilde += results[1]*qtilde_I2_2_weight[k];
+          bulkvis_result_qtilde += results[2]*qtilde_I2_2_weight[k];
        }
        equilibriumTilde_results[i] += equilibrium_result_qtilde*prefactor;
        viscousTilde_results[i] += viscous_result_qtilde*prefactor/(ktilde*ktilde);
-       
+       bulkvisTilde_results[i] += bulkvis_result_qtilde*prefactor;
    }
    
    delete [] results;
@@ -493,6 +533,7 @@ void QGP_2to2_Scattering::Integrate_I2_omega(double ktilde, double qtilde, doubl
 {
    double equilibrium_result = 0.0e0;
    double viscous_result = 0.0e0;
+   double bulkvis_result = 0.0e0;
 
    double omega_min = qtilde - 2*ktilde;
    if(omega_min < - qtilde)
@@ -509,16 +550,19 @@ void QGP_2to2_Scattering::Integrate_I2_omega(double ktilde, double qtilde, doubl
       Integrate_I2_pprime(ktilde, qtilde, omega_I2_pt[i], results);
       equilibrium_result += results[0]*omega_I2_weight[i];
       viscous_result += results[1]*omega_I2_weight[i];
+      bulkvis_result += results[2]*omega_I2_weight[i];
    }
 
    results[0] = equilibrium_result;
    results[1] = viscous_result;
+   results[2] = bulkvis_result;
 }
 
 void QGP_2to2_Scattering::Integrate_I2_pprime(double ktilde, double qtilde, double omega, double* results)
 {
    double equilibrium_result = 0.0e0;
    double viscous_result = 0.0e0;
+   double bulkvis_result = 0.0e0;
    
    double pprime_min_1 = (qtilde - omega)/2.;
    double pprime_max_1 = pprime_min_1+1.0;
@@ -544,6 +588,7 @@ void QGP_2to2_Scattering::Integrate_I2_pprime(double ktilde, double qtilde, doub
    double sin_theta_kq = sqrt(sin_theta_kq_sq);
 
    double term_st, term_ut, term_st_vis, term_ut_vis;
+   double term_st_bulkvis, term_ut_bulkvis;
    // - s/t term
    for(int i = 0; i < n_pprime_I2_1; i++)
    {
@@ -564,8 +609,12 @@ void QGP_2to2_Scattering::Integrate_I2_pprime(double ktilde, double qtilde, doub
                              *( (1. + f0_E2)*deltaf_chi(pprime)*(1.5*sin_theta_kq*cos_theta_kq*sin_theta_pprimeq*cos_theta_pprimeq)
                                -f0_E3*deltaf_chi(pprime+omega)*(1.5*Power(1./(pprime+omega), 2)*(pprime*sin_theta_kq*sin_theta_pprimeq*(pprime*cos_theta_pprimeq + qtilde)*cos_theta_kq))
                               );
+      double bulkvis_integrand = eq_integrand*((1. - f0_E1)*bulk_deltaf_quark(omega + ktilde)
+                                               + (1. + f0_E2)*bulk_deltaf_gluon(pprime)
+                                               - f0_E3*bulk_deltaf_quark(omega + pprime));
       equilibrium_result += eq_integrand*pprime_I2_1_weight[i];
       viscous_result += vis_integrand*pprime_I2_1_weight[i];
+      bulkvis_result += bulkvis_integrand*pprime_I2_1_weight[i];
    }
    for(int i = 0; i < n_pprime_I2_2; i++)
    {
@@ -586,14 +635,20 @@ void QGP_2to2_Scattering::Integrate_I2_pprime(double ktilde, double qtilde, doub
                              *( (1. + f0_E2)*deltaf_chi(pprime)*(1.5*sin_theta_kq*cos_theta_kq*sin_theta_pprimeq*cos_theta_pprimeq)
                                -f0_E3*deltaf_chi(pprime+omega)*(1.5*Power(1./(pprime+omega), 2)*(pprime*sin_theta_kq*sin_theta_pprimeq*(pprime*cos_theta_pprimeq + qtilde)*cos_theta_kq))
                               );
+      double bulkvis_integrand = eq_integrand*((1. - f0_E1)*bulk_deltaf_quark(omega + ktilde)
+                                               + (1. + f0_E2)*bulk_deltaf_gluon(pprime)
+                                               - f0_E3*bulk_deltaf_quark(omega + pprime));
       equilibrium_result += eq_integrand*pprime_I2_2_weight[i];
       viscous_result += vis_integrand*pprime_I2_2_weight[i];
+      bulkvis_result += bulkvis_integrand*pprime_I2_2_weight[i];
    }
    term_st = equilibrium_result;
    term_st_vis = viscous_result;
+   term_st_bulkvis = bulkvis_result;
    //u/t term
    equilibrium_result = 0.0;
    viscous_result = 0.0;
+   bulkvis_result = 0.0;
    for(int i = 0; i < n_pprime_I2_1; i++)
    {
       double pprime = pprime_I2_1_pt[i];
@@ -613,8 +668,12 @@ void QGP_2to2_Scattering::Integrate_I2_pprime(double ktilde, double qtilde, doub
                              *( (1. - f0_E2)*deltaf_chi(pprime)*(1.5*sin_theta_kq*cos_theta_kq*sin_theta_pprimeq*cos_theta_pprimeq)
                                +f0_E3*deltaf_chi(pprime+omega)*(1.5*Power(1./(pprime+omega), 2)*(pprime*sin_theta_kq*sin_theta_pprimeq*(pprime*cos_theta_pprimeq + qtilde)*cos_theta_kq))
                               );
+      double bulkvis_integrand = eq_integrand*((1. - f0_E1)*bulk_deltaf_quark(omega + ktilde)
+                                               + (1. - f0_E2)*bulk_deltaf_quark(pprime)
+                                               + f0_E3*bulk_deltaf_gluon(omega + pprime));
       equilibrium_result += eq_integrand*pprime_I2_1_weight[i];
       viscous_result += vis_integrand*pprime_I2_1_weight[i];
+      bulkvis_result += bulkvis_integrand*pprime_I2_1_weight[i];
    }
    for(int i = 0; i < n_pprime_I2_2; i++)
    {
@@ -635,14 +694,34 @@ void QGP_2to2_Scattering::Integrate_I2_pprime(double ktilde, double qtilde, doub
                              *( (1. - f0_E2)*deltaf_chi(pprime)*(1.5*sin_theta_kq*cos_theta_kq*sin_theta_pprimeq*cos_theta_pprimeq)
                                +f0_E3*deltaf_chi(pprime+omega)*(1.5*Power(1./(pprime+omega), 2)*(pprime*sin_theta_kq*sin_theta_pprimeq*(pprime*cos_theta_pprimeq + qtilde)*cos_theta_kq))
                               );
+      double bulkvis_integrand = eq_integrand*((1. - f0_E1)*bulk_deltaf_quark(omega + ktilde)
+                                               + (1. - f0_E2)*bulk_deltaf_quark(pprime)
+                                               + f0_E3*bulk_deltaf_gluon(omega + pprime));
       equilibrium_result += eq_integrand*pprime_I2_2_weight[i];
       viscous_result += vis_integrand*pprime_I2_2_weight[i];
+      bulkvis_result += bulkvis_integrand*pprime_I2_2_weight[i];
    }
    term_ut = equilibrium_result;
    term_ut_vis = viscous_result;
+   term_ut_bulkvis = bulkvis_result;
 
    results[0] = 16.*(term_st + term_ut);
    results[1] = 16.*(term_st_vis + term_ut_vis);
+   results[2] = 16.*(term_st_bulkvis + term_ut_bulkvis);
+}
+
+double QGP_2to2_Scattering::bulk_deltaf_gluon(double etilde)
+{
+    double results;
+    results = 0.0;
+    return(results);
+}
+
+double QGP_2to2_Scattering::bulk_deltaf_quark(double etilde)
+{
+    double results;
+    results = 0.0;
+    return(results);
 }
 
 void QGP_2to2_Scattering::calculateEmissionrates_soft(string filename_in)
@@ -651,7 +730,7 @@ void QGP_2to2_Scattering::calculateEmissionrates_soft(string filename_in)
    double m_inf = g_s/sqrt(3.);
    filename = filename_in;
 
-   double* results = new double [2];
+   double* results = new double [3];
    double p_min = 0.0;
    double p_max = qtilde_cutoff/(m_inf);
    gauss_quadrature(n_pSoft, 1, 0.0, 0.0, p_min, p_max, pSoft, pSoft_weight);
@@ -664,22 +743,26 @@ void QGP_2to2_Scattering::calculateEmissionrates_soft(string filename_in)
 
        double equilibrium_result_p = 0.0;
        double viscous_result_p = 0.0;
+       double bulkvis_result_p = 0.0;
        for(int k=0; k<n_pSoft; k++)
        {
           double equilibrium_result_theta = 0.0;
           double viscous_result_theta = 0.0;
+          double bulkvis_result_theta = 0.0;
           for(int l=0; l<n_theta; l++)
           {
              getIntegrand(ktilde, pSoft[k], costhetaSoft[l], results);
              equilibrium_result_theta += results[0]*costhetaSoft_weight[l];
              viscous_result_theta += results[1]*costhetaSoft_weight[l];
+             bulkvis_result_theta += results[2]*costhetaSoft_weight[l];
           }
           equilibrium_result_p += equilibrium_result_theta*pSoft_weight[k];
           viscous_result_p += viscous_result_theta*pSoft_weight[k];
+          bulkvis_result_p += bulkvis_result_theta*pSoft_weight[k];
        }
        equilibriumTilde_results[i] = equilibrium_result_p*prefactor;
        viscousTilde_results[i] = ((1. - f_q)*deltaf_chi(ktilde)*equilibrium_result_p + viscous_result_p)*prefactor/(ktilde*ktilde);
-
+       bulkvisTilde_results[i] = ((1. - f_q)*bulk_deltaf_quark(ktilde)*equilibrium_result_p + bulkvis_result_p)*prefactor;
    }
    
    buildupEmissionrate2DTable_soft();
@@ -692,6 +775,7 @@ void QGP_2to2_Scattering::getIntegrand(double ktilde, double ptilde, double cost
     double common_factor = ptilde*ptilde/(4.*M_PI*M_PI);
     double equilibrium_integrand;
     double vis_integrand;
+    double bulkvis_integrand;
 
     Selfenergy_coefficients Sigma_p;
     Selfenergy_coefficients* Sigma_p_ptr = &Sigma_p;
@@ -756,8 +840,12 @@ void QGP_2to2_Scattering::getIntegrand(double ktilde, double ptilde, double cost
     double vis_part2 = 2.*Impart_ComplexMultiply(Re_Eqpart, Im_Eqpart, Re_vis_temp_part2, Im_vis_temp_part2);
     vis_integrand = vis_part1 + vis_part2;
 
+    // bulk viscous correction
+    bulkvis_integrand = 0.0;
+
     results[0] = common_factor*equilibrium_integrand;
     results[1] = common_factor*vis_integrand;
+    results[2] = common_factor*bulkvis_integrand;
     return;
 }
 

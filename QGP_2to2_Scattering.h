@@ -30,7 +30,7 @@ class QGP_2to2_Scattering
 
       int n_Eq, n_Temp;
       double *Eq_tb, *T_tb;
-      double **equilibrium_results, **viscous_results;
+      double **equilibrium_results, **viscous_results, **bulkvis_results;
 
       int channel;
       string filename;
@@ -38,7 +38,7 @@ class QGP_2to2_Scattering
 
       int n_ktilde;
       double *ktilde_pt;
-      double *equilibriumTilde_results, *viscousTilde_results;
+      double *equilibriumTilde_results, *viscousTilde_results, *bulkvisTilde_results;
 
       // Gaussian quadrature points for phase space integrations 
       int n_qtilde_I1;
@@ -89,6 +89,9 @@ class QGP_2to2_Scattering
       void scale_gausspoints_qtilde(double ktilde);
       void Integrate_I2_omega(double ktilde, double qtilde, double* results);
       void Integrate_I2_pprime(double ktilde, double qtilde, double omega, double* results);
+
+      double bulk_deltaf_gluon(double etilde);
+      double bulk_deltaf_quark(double etilde);
 
       void calculateEmissionrates_soft(string filename);
       void getIntegrand(double qtilde, double ptilde, double costhetap, double* results);
