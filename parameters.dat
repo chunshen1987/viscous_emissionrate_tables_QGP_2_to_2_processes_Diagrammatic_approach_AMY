@@ -1,13 +1,11 @@
 n_flavor = 3       # number of flavor for quarks
 deltaf_alpha = 2   # the exponent of the p dependence of the delta f correction deltaf_alpha = 2 for democratic choice
 
+# soft part of the phase space integrals
 n_p = 100
 n_theta = 100
 
-n_ktilde = 100
-ktilde_i = 0.05
-ktilde_max = 50
-
+# hard part of the phase integrals
 n_qtilde_I1 = 100
 n_qtilde_I2_1 = 100
 n_qtilde_I2_2 = 20
@@ -16,6 +14,11 @@ n_omega_I2 = 80
 n_pprime_I1 = 200
 n_pprime_I2_1 = 200
 n_pprime_I2_2 = 40
+
+# 1D temperature scaled photon momentum table parameters
+n_ktilde = 100
+ktilde_i = 0.05
+ktilde_max = 50
 
 # parameters for output photon emission rate table
 n_Eq = 80
